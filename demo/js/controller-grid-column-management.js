@@ -109,7 +109,6 @@ dxGridExtensionDemo.controller('columnManagement', function columnManagementCrtl
 
                 });
 
-                // grid.refresh();
                 $scope.gridManagement.showColumnManagementConsole = false;
 
 

@@ -1,7 +1,7 @@
 dxGridExtensionDemo.directive('flatGridManagement', function($controller) {
     return {
         restrict: "E",
-        scope: {},
+        scope: true,
         templateUrl: 'html/view.flat.grid.management.html',
         controller: function($scope, $attrs) {
 

@@ -21,6 +21,8 @@ dxGridExtensionDemo.factory('conditionalFormattingConfiguration', function($log)
 
                     _.forEach(row, function(value, key) {
 
+                        dxGridExtension.initFormulas(this);
+
                         var replacement = (typeof value) === "string" ? "'" + value + "'" : value;
                         processedExpression = processedExpression.split('[' + key + ']').join(" " + replacement + " ");
                     });
@@ -30,7 +32,7 @@ dxGridExtensionDemo.factory('conditionalFormattingConfiguration', function($log)
                     if (result) rule.formatting(cell, rule);
 
                 } else {
-                    rule.formatting(cell, rule,dataSource);
+                    rule.formatting(cell, rule, dataSource);
                 }
 
             };

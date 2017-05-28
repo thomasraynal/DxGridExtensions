@@ -13,12 +13,15 @@ dxGridExtensionDemo.service('customColumnConfiguration', function($log) {
 
         try {
 
-            var expression = rule.expression;
 
+
+            var expression = rule.expression;
             var replacement = {};
             var processedExpression = expression;
 
             _.forEach(datasource, function(item) {
+
+                dxGridExtension.initFormulas(this);
 
                 _.forEach(item, function(value, key) {
 

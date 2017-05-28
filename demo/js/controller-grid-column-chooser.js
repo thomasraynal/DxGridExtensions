@@ -1,7 +1,5 @@
 dxGridExtensionDemo.controller('columnChooser', function columnChooserCrtl($scope, $controller, $timeout, customColumnConfiguration) {
 
-    //refacto: dragging feature make the thing slow as a lazy cow...
-
     $scope.columnChooserGrid;
 
     $scope.gridManagement.showColumnChooserConsole = false;
@@ -46,7 +44,6 @@ dxGridExtensionDemo.controller('columnChooser', function columnChooserCrtl($scop
     };
 
     $scope.columnChooserDataSource = new DevExpress.data.ArrayStore({
-        key: 'dataField',
         data: []
     });
 
@@ -86,8 +83,18 @@ dxGridExtensionDemo.controller('columnChooser', function columnChooserCrtl($scop
             e.rowElement.data('keyValue', e.key);
         },
         editing: {
-            mode: "cell",
-            allowUpdating: true
+            mode: "popup",
+            allowUpdating: true,
+            popup: {
+                showTitle: false,
+                width: 700,
+                height: 345,
+                position: {
+                    my: "middle",
+                    at: "middle",
+                    of: window
+                }
+            }
         },
         columns: [{
             dataField: 'caption',
@@ -204,14 +211,16 @@ dxGridExtensionDemo.controller('columnChooser', function columnChooserCrtl($scop
                     var scrollUpOffset = $scope.columnChooserGrid.offset().top + 50;
 
                     if (ui.offset.top < scrollUpOffset) {
-                        var scrollable = $scope.gridInstance.getScrollable();
+                        var scrollable = $scope.columnChooserGrid.dxDataGrid("instance").getScrollable();
                         var offset = scrollable.scrollOffset().top - 10 < 0 ? 0 : scrollable.scrollOffset().top - 10;
+                        console.log(offset);
                         scrollable.scrollTo(offset)
                     }
 
                     if (ui.offset.top > scrollDownOffset) {
-                        var scrollable = $scope.gridInstance.getScrollable();
+                        var scrollable = $scope.columnChooserGrid.dxDataGrid("instance").getScrollable();
                         var offset = scrollable.scrollOffset().top + 10;
+                        console.log(offset);
                         scrollable.scrollTo(offset)
                     };
 

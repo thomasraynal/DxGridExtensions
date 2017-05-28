@@ -1,6 +1,5 @@
 dxGridExtensionDemo.controller('customColumns', function customColumnsCrtl($scope, $controller, $timeout, $log, customColumnConfiguration) {
 
-
     $scope.gridManagement.showCustomColumnConsole = false;
 
     $scope.customColumnGrid = null;
@@ -152,8 +151,6 @@ dxGridExtensionDemo.controller('customColumns', function customColumnsCrtl($scop
 
             if (dxGridExtension.isUndefinedOrNull($scope.gridInstance)) return;
 
-
-
             $scope.updateGrid(() => {
 
                 var rule = customColumnConfiguration.createCustomColumn(
@@ -172,7 +169,6 @@ dxGridExtensionDemo.controller('customColumns', function customColumnsCrtl($scop
 
                 customColumnConfiguration.computeCustomColumn(rule, $scope.dataSource);
 
-                //bug: column is not inserted at the specified index
                 var column = {
                     dataField: $scope.customColumnName,
                     caption: $scope.customColumnName,
@@ -194,7 +190,6 @@ dxGridExtensionDemo.controller('customColumns', function customColumnsCrtl($scop
                             type: $scope.selectedCustomColumnFormating.format.type,
                             precision: $scope.selectedCustomColumnFormating.format.precision
                         },
-
                         displayFormat: "{0}"
                     });
                 }

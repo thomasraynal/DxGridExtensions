@@ -2,16 +2,14 @@ dxGridExtensionDemo.directive('flatGrid', function($timeout, $controller, custom
     return {
         restrict: "E",
         templateUrl: 'html/view.grid.flat.html',
-        scope: {},
+        scope: true,
         link: function(scope, element, attrs) {
 
             scope.widget = scope.$parent;
 
             //refacto: implement inheritance
-            if (!scope.widget.config) {
-                scope.widget.config = {};
-                scope.widget.config[attrs.bindto] = {};
-            }
+            if (!scope.widget.config) scope.widget.config = {};
+            scope.widget.config[attrs.bindto] = {};
 
             scope.flatGridName = attrs.instance;
             scope.flatGridOptions = scope.widget[attrs.options];
@@ -20,8 +18,7 @@ dxGridExtensionDemo.directive('flatGrid', function($timeout, $controller, custom
             if (!scope.widget.gridManagement) scope.widget.gridManagement = {};
             scope.widget.gridManagement[scope.flatGridName] = {};
 
-
-            scope.widget.currentColumn = null;
+            scope.widget.currentColumn = null;  
             scope.widget.currentRow = null;
 
             var columns = dxGridExtension.isUndefinedOrNull(getConfig('columns')) ? null : getConfig('columns');
@@ -30,13 +27,9 @@ dxGridExtensionDemo.directive('flatGrid', function($timeout, $controller, custom
             setConfig('columns', columns);
             setConfig('groupItems', groupItems);
 
-            scope.isNewGridWidget = dxGridExtension.isUndefinedOrNull(getConfig('columns'));
-
             $timeout(() => initializeInternal());
 
             scope.$watch(scope.flatGridOptions.bindingOptions.columns, function() {
-
-                if (scope.isNewGridWidget) {
 
                     var columns = getConfig('columns');
                     var groupItems = getConfig('groupItems');
@@ -60,7 +53,7 @@ dxGridExtensionDemo.directive('flatGrid', function($timeout, $controller, custom
                     }, []);
 
                     setConfig('groupItems', groups);
-                }
+                
             });
 
             scope.$watch(scope.flatGridOptions.bindingOptions.dataSource, function() {
@@ -72,9 +65,6 @@ dxGridExtensionDemo.directive('flatGrid', function($timeout, $controller, custom
                 _.each(getConfig('customColumns'), function(rule) {
                     customColumnConfiguration.computeCustomColumn(rule, dataSource);
                 });
-
-                //refacto: should allow new columns
-                if (scope.isNewGridWidget) {
 
                     var template = dataSource[0];
 
@@ -141,24 +131,7 @@ dxGridExtensionDemo.directive('flatGrid', function($timeout, $controller, custom
 
 
                     setConfig('columns', columns);
-
-                    $timeout(() => scope.isNewGridWidget = false);
-                }
             });
-
-            scope.widget.exportExcel = function() {
-
-                var grid = getGridInstance();
-                grid.option("export", {
-                    enabled: false,
-                    fileName: scope.widget.container._config.title + "_" + moment(scope.widget.workspace.date).format('YYYYMMDD')
-                });
-
-                grid.exportToExcel();
-            };
-
-
-
 
             function getDataSource() {
                 return Object.byString(scope, scope.flatGridOptions.bindingOptions.dataSource.dataPath);
@@ -187,70 +160,7 @@ dxGridExtensionDemo.directive('flatGrid', function($timeout, $controller, custom
                 return scope.widget.config[scope.flatGridName][index];
             };
 
-            //refacto plugins
-            function getGridMenuItems(element) {
-
-                scope.widget.gridManagement[scope.flatGridName].currentColumn = element.column;
-                scope.widget.gridManagement[scope.flatGridName].currentRow = element.row;
-
-                return [{
-                    text: 'Management - Columns',
-                    onItemClick: function() {
-                        scope.widget.gridManagement[scope.flatGridName].showColumnChooserConsole = true;
-                    }
-                }, {
-                    text: 'Management - Conditional Formatting',
-                    onItemClick: function() {
-
-
-                        scope.widget.gridManagement[scope.flatGridName].showConditionalFormattingConsole = true;
-
-                    }
-                }, {
-                    text: 'Management - Custom Columns',
-                    onItemClick: function() {
-
-                        scope.widget.gridManagement[scope.flatGridName].showCustomColumnConsole = true;
-                    }
-                }, {
-                    text: 'Current Column - Modify',
-                    onItemClick: function() {
-
-                        scope.widget.gridManagement[scope.flatGridName].showColumnManagementConsole = true;
-                    }
-                }, {
-                    text: 'Current Column - Remove Aggregation',
-                    onItemClick: function() {
-
-                        _.remove(scope.widget.config[scope.flatGridName].groupItems, function(item) {
-                            return item.column === scope.widget.currentColumn.dataField;
-                        });
-
-                    }
-                }, {
-                    text: 'Current Column - Create Aggregation',
-                    onItemClick: function() {
-
-                        if (null == scope.widget.currentColumn || scope.widget.currentColumn.dataType == "string") return;
-
-                        var groupItems = getConfig('groupItems');
-                        if (dxGridExtension.isUndefinedOrNull(groupItems)) return;
-
-                        var result = _.find(scope.widget.config.groupItems, function(item) {
-                            return item.column === scope.widget.currentColumn.dataField;
-                        });
-
-                        if (!dxGridExtension.isUndefinedOrNull(result)) return;
-
-                        var group = createDefaultNumberGroupItem(scope.widget.currentColumn.dataField);
-                        scope.widget.config[scope.flatGridName].groupItems.push(group);
-
-                    }
-                }]
-            };
-
             function initializeInternal() {
-
 
                 $timeout(() => {
 
@@ -300,6 +210,67 @@ dxGridExtensionDemo.directive('flatGrid', function($timeout, $controller, custom
                 });
             };
 
+            function getGridMenuItems(element) {
+
+                scope.widget.gridManagement[scope.flatGridName].currentColumn = element.column;
+                scope.widget.gridManagement[scope.flatGridName].currentRow = element.row;
+
+                return [{
+                    text: 'Management - Columns',
+                    onItemClick: function() {
+                        scope.widget.gridManagement[scope.flatGridName].showColumnChooserConsole = true;
+                    }
+                }, {
+                    text: 'Management - Conditional Formatting',
+                    onItemClick: function() {
+
+
+                        scope.widget.gridManagement[scope.flatGridName].showConditionalFormattingConsole = true;
+
+                    }
+                }, {
+                    text: 'Management - Custom Columns',
+                    onItemClick: function() {
+
+                        scope.widget.gridManagement[scope.flatGridName].showCustomColumnConsole = true;
+                    }
+                }, {
+                    text: 'Current Column - Modify',
+                    onItemClick: function() {
+
+                        scope.widget.gridManagement[scope.flatGridName].showColumnManagementConsole = true;
+                    }
+                }, {
+                    text: 'Current Column - Remove Aggregation',
+                    onItemClick: function() {
+
+                        _.remove(scope.widget.config[scope.flatGridName].groupItems, function(item) {
+                            return item.column === scope.widget.gridManagement[scope.flatGridName].currentColumn.dataField;
+                        });
+
+                    }
+                }, {
+                    text: 'Current Column - Create Aggregation',
+                    onItemClick: function() {
+
+                        if (null == scope.widget.gridManagement[scope.flatGridName].currentColumn || scope.widget.gridManagement[scope.flatGridName].currentColumn.dataType == "string") return;
+
+                        var groupItems = getConfig('groupItems');
+                        if (dxGridExtension.isUndefinedOrNull(groupItems)) return;
+
+                        var result = _.find(scope.widget.config.groupItems, function(item) {
+                            return item.column === scope.widget.gridManagement[scope.flatGridName].currentColumn.dataField;
+                        });
+
+                        if (!dxGridExtension.isUndefinedOrNull(result)) return;
+
+                        var group = createDefaultNumberGroupItem(scope.widget.gridManagement[scope.flatGridName].currentColumn.dataField);
+                        scope.widget.config[scope.flatGridName].groupItems.push(group);
+
+                    }
+                }]
+            };
+
             function createDefaultNumberGroupItem(name) {
                 return {
                     column: name,
@@ -310,6 +281,18 @@ dxGridExtensionDemo.directive('flatGrid', function($timeout, $controller, custom
                     displayFormat: "{0}"
                 };
             };
+
+            scope.widget.exportExcel = function() {
+
+                var grid = getGridInstance();
+                grid.option("export", {
+                    enabled: false,
+                    fileName: scope.widget.container._config.title + "_" + moment(scope.widget.workspace.date).format('YYYYMMDD')
+                });
+
+                grid.exportToExcel();
+            };
+
 
         }
 

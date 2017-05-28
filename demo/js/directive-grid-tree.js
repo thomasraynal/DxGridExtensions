@@ -2,16 +2,14 @@ dxGridExtensionDemo.directive('treeGrid', function($timeout, $controller, custom
     return {
         restrict: "E",
         templateUrl: 'html/view.grid.tree.html',
-        scope: {},
+        scope: true,
         link: function(scope, element, attrs) {
 
             scope.widget = scope.$parent;
 
             //refacto: implement inheritance
-            if (!scope.widget.config) {
-                scope.widget.config = {};
-                scope.widget.config[attrs.bindto] = {};
-            }
+            if (!scope.widget.config) scope.widget.config = {};
+            scope.widget.config[attrs.bindto] = {};
 
             scope.treeListName = attrs.instance;
             scope.treeListOptions = scope.widget[attrs.options];
@@ -23,12 +21,11 @@ dxGridExtensionDemo.directive('treeGrid', function($timeout, $controller, custom
             scope.widget.currentColumn = null;
             scope.widget.currentRow = null;
 
-
             var columns = dxGridExtension.isUndefinedOrNull(getConfig('columns')) ? null : getConfig('columns');
 
             setConfig('columns', columns);
 
-            scope.isNewGridWidget = dxGridExtension.isUndefinedOrNull(getConfig('columns'));
+            $timeout(() => initializeInternal());
 
             scope.$watch(scope.treeListOptions.bindingOptions.dataSource, function() {
 
@@ -36,81 +33,77 @@ dxGridExtensionDemo.directive('treeGrid', function($timeout, $controller, custom
 
                 if (dxGridExtension.isUndefinedOrNull(dataSource) || dataSource.length == 0) return;
 
-                //refacto: should allow new columns
-                if (scope.isNewGridWidget) {
+                var template = dataSource[0];
 
-                    var template = dataSource[0];
+                var index = 0;
 
-                    var index = 0;
+                var columns = _.transform(Object.keys(template), function(aggregate, field) {
 
-                    var columns = _.transform(Object.keys(template), function(aggregate, field) {
+                    var columnOption = {
+                        dataField: field,
+                        caption: field,
+                        dataType: "string",
+                        format: { type: '', precision: 0 },
+                        visibleIndex: index++
+                    };
 
-                        var columnOption = {
-                            dataField: field,
-                            caption: field,
-                            dataType: "string",
-                            format: { type: '', precision: 0 },
-                            visibleIndex: index++
-                        };
+                    var existingColumn = _.find(getConfig('columns'), function(c) {
+                        return c.dataField == field
+                    });
 
-                        var existingColumn = _.find(getConfig('columns'), function(c) {
-                            return c.dataField == field
-                        });
+                    if (null != existingColumn) {
 
-                        if (null != existingColumn) {
+                        aggregate.push(existingColumn);
 
-                            aggregate.push(existingColumn);
+                    } else {
 
-                        } else {
-
-                            for (var i = 0; i < dataSource.length; i++) {
+                        for (var i = 0; i < dataSource.length; i++) {
 
 
-                                if (!dxGridExtension.isUndefinedOrNull(dataSource[i][field])) {
+                            if (!dxGridExtension.isUndefinedOrNull(dataSource[i][field])) {
 
-                                    if (typeof(dataSource[i][field]) === "boolean") {
+                                if (typeof(dataSource[i][field]) === "boolean") {
 
-                                        columnOption.dataType = "boolean";
-
-                                        break;
-                                    }
-
-                                    if (window.dxGridExtension.isInt(dataSource[i][field])) {
-
-                                        columnOption.dataType = "number";
-                                        columnOption.format = { type: 'fixedpoint', precision: 0 };
-                                        break;
-                                    }
-
-                                    if (window.dxGridExtension.isFloat(dataSource[i][field])) {
-
-                                        columnOption.dataType = "number";
-                                        columnOption.summaryType = "sum";
-                                        columnOption.format = { type: 'fixedpoint', precision: 2 };
-                                        break;
-                                    }
-
-                                    columnOption.dataType = "string";
-                                    columnOption.format = { type: '', precision: 0 };
+                                    columnOption.dataType = "boolean";
 
                                     break;
                                 }
-                            };
 
-                            aggregate.push(columnOption);
+                                if (window.dxGridExtension.isInt(dataSource[i][field])) {
 
-                        }
-                    }, []);
+                                    columnOption.dataType = "number";
+                                    columnOption.format = { type: 'fixedpoint', precision: 0 };
+                                    break;
+                                }
+
+                                if (window.dxGridExtension.isFloat(dataSource[i][field])) {
+
+                                    columnOption.dataType = "number";
+                                    columnOption.summaryType = "sum";
+                                    columnOption.format = { type: 'fixedpoint', precision: 2 };
+                                    break;
+                                }
+
+                                columnOption.dataType = "string";
+                                columnOption.format = { type: '', precision: 0 };
+
+                                break;
+                            }
+                        };
+
+                        aggregate.push(columnOption);
+
+                    }
+                }, []);
 
 
-                    setConfig('columns', columns);
+                setConfig('columns', columns);
 
-                    scope.isNewGridWidget = false;
-                }
             });
 
-            $timeout(() => initializeInternal());
-
+            function getDataSource() {
+                return Object.byString(scope, scope.treeListOptions.bindingOptions.dataSource.dataPath);
+            };
 
             function getGridInstance() {
                 if (dxGridExtension.isUndefinedOrNull(scope.$control)) return null;
@@ -135,18 +128,6 @@ dxGridExtensionDemo.directive('treeGrid', function($timeout, $controller, custom
                 return scope.widget.config[scope.treeListName][index];
             };
 
-            function addEventHandler(ev, handler) {
-
-                var grid = getGridInstance();
-
-                var current = grid.option(ev);
-
-                grid.option(ev, function(options) {
-                    if (null != current) current(options);
-                    handler(options);
-                })
-            };
-
             function initializeInternal() {
 
                 $timeout(() => {
@@ -158,7 +139,7 @@ dxGridExtensionDemo.directive('treeGrid', function($timeout, $controller, custom
                         addEventHandler("onCellPrepared", function(options) {
                             _.each(getConfig('conditionalFormattingRules'), function(rule) {
 
-                                var datasource = Object.byString(scope, scope.treeListOptions.bindingOptions.dataSource.dataPath)
+                                var dataSource = Object.byString(scope, scope.treeListOptions.bindingOptions.dataSource.dataPath);
 
                                 conditionalFormattingConfiguration.applyConditionalFormattingExpressionOnCell(options, rule, dataSource);
                             });
@@ -178,8 +159,19 @@ dxGridExtensionDemo.directive('treeGrid', function($timeout, $controller, custom
                         });
                     });
 
-
                 });
+            };
+
+            function addEventHandler(ev, handler) {
+
+                var grid = getGridInstance();
+
+                var current = grid.option(ev);
+
+                grid.option(ev, function(options) {
+                    if (null != current) current(options);
+                    handler(options);
+                })
             };
 
             function getGridMenuItems(element) {

@@ -3,12 +3,12 @@ dxGridExtensionDemo.controller('baseGridManagement', function baseGridManagement
     $scope.widget = $scope.$parent;
     $scope.gridName = $attrs.bindto;
     if (!$scope.widget.gridManagement) $scope.widget.gridManagement = {};
-    
+
     if (!$scope.widget.config) {
         $scope.widget.config = {};
         $scope.widget.config[$attrs.bindto] = {};
     }
-    
+
     $scope.gridManagement = $scope.widget.gridManagement[$attrs.bindto];
     $scope.config = $scope.widget.config[$attrs.bindto];
 
@@ -19,16 +19,40 @@ dxGridExtensionDemo.controller('baseGridManagement', function baseGridManagement
         $scope.gridInstance.endUpdate();
     };
 
+    function updateAvailableColumns() {
+
+        if (dxGridExtension.isUndefinedOrNull($scope.config.columns)) return;
+        $scope.dataSource = $scope.widget[$attrs.datasource];
+        $scope.availableColumns = _.sortBy(_.transform($scope.config.columns.concat(null === $scope.config.customColumns ? [] : $scope.config.customColumns), function(result, item) { result.push(item.dataField) }, []), function(e) {
+            return e
+        });
+    };
+
     $scope.$watch(function() {
         return $scope.widget[$attrs.datasource];
     }, function() {
 
         $scope.dataSource = $scope.widget[$attrs.datasource];
+        updateAvailableColumns()
 
         $scope.availableColumns = _.sortBy(_.transform($scope.config.columns, function(result, item) { result.push(item.dataField) }, []), function(e) {
             return e
         });
+    });
 
+    $scope.$watch(function() {
+        return $scope.config.customColumns;
+    }, function() {
+
+        updateAvailableColumns()
+    });
+
+
+    $scope.$watch(function() {
+        return $scope.config.customColumns.length;
+    }, function() {
+
+        updateAvailableColumns()
     });
 
     $scope.$watch(function() {
