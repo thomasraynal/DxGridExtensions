@@ -1,4 +1,4 @@
-dxGridExtensionDemo.controller('columnManagement', function columnManagementCrtl($scope, $controller, $timeout, customColumnConfiguration) {
+dxGridExtension.controller('columnManagement', function columnManagementCrtl($scope, $controller, $timeout, customColumnConfiguration) {
 
     $scope.gridManagement.showColumnManagementConsole = false;
 
@@ -23,7 +23,7 @@ dxGridExtensionDemo.controller('columnManagement', function columnManagementCrtl
         return $scope.gridManagement.showColumnManagementConsole;
     }, function() {
 
-        if (dxGridExtension.isUndefinedOrNull($scope.currentColumn) || !$scope.gridManagement.showColumnManagementConsole) return;
+        if (dxGridExtensions.isUndefinedOrNull($scope.currentColumn) || !$scope.gridManagement.showColumnManagementConsole) return;
 
         $scope.columnManagementColumnName = $scope.currentColumn.caption;
 
@@ -31,15 +31,15 @@ dxGridExtensionDemo.controller('columnManagement', function columnManagementCrtl
 
             if (item.value.dataType == $scope.currentColumn.dataType) {
 
-                if (!dxGridExtension.isUndefinedOrNull($scope.currentColumn.format)) {
+                if (!dxGridExtensions.isUndefinedOrNull($scope.currentColumn.format)) {
 
-                    if (dxGridExtension.isUndefinedOrNull(item.value.format)) return false;
+                    if (dxGridExtensions.isUndefinedOrNull(item.value.format)) return false;
 
                     if (item.value.format.type == $scope.currentColumn.format.type &&
                         item.value.format.precision == $scope.currentColumn.format.precision) return true;
 
                 } else {
-                    if (dxGridExtension.isUndefinedOrNull(item.value.format)) return true;
+                    if (dxGridExtensions.isUndefinedOrNull(item.value.format)) return true;
                 }
             }
 
@@ -83,7 +83,7 @@ dxGridExtensionDemo.controller('columnManagement', function columnManagementCrtl
                     $scope.gridInstance.columnOption($scope.currentColumn.dataField, 'dataType', $scope.columnManagementColumnFormating.value.dataType);
                     $scope.gridInstance.columnOption($scope.currentColumn.dataField, 'format', { type: null, precision: null });
 
-                    if (!dxGridExtension.isUndefinedOrNull($scope.columnManagementColumnFormating.value.format)) {
+                    if (!dxGridExtensions.isUndefinedOrNull($scope.columnManagementColumnFormating.value.format)) {
                         $scope.gridInstance.columnOption($scope.currentColumn.dataField, 'format.type', $scope.columnManagementColumnFormating.value.format.type);
                         $scope.gridInstance.columnOption($scope.currentColumn.dataField, 'format.precision', $scope.columnManagementColumnFormating.value.format.precision);
                     }
@@ -92,9 +92,9 @@ dxGridExtensionDemo.controller('columnManagement', function columnManagementCrtl
                         return item.column === $scope.currentColumn.dataField;
                     });
 
-                    if (!dxGridExtension.isUndefinedOrNull(groupItem)) {
+                    if (!dxGridExtensions.isUndefinedOrNull(groupItem)) {
 
-                        if (dxGridExtension.isUndefinedOrNull($scope.columnManagementColumnFormating.value.format)) {
+                        if (dxGridExtensions.isUndefinedOrNull($scope.columnManagementColumnFormating.value.format)) {
                             groupItem.valueFormat.type = null;
                             groupItem.valueFormat.precision = null;
                         } else {

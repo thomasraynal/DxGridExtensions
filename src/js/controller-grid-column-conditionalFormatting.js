@@ -1,4 +1,4 @@
-dxGridExtensionDemo.controller('conditionalFormatting', function conditionalFormattingCrtl($scope, $controller, $timeout, conditionalFormattingConfiguration) {
+dxGridExtension.controller('conditionalFormatting', function conditionalFormattingCrtl($scope, $controller, $timeout, conditionalFormattingConfiguration) {
 
     const defaultColor = "#ff2600";
     const defaultIcon = conditionalFormattingConfiguration.availableIcons[0];
@@ -19,7 +19,7 @@ dxGridExtensionDemo.controller('conditionalFormatting', function conditionalForm
     $scope.currentConditionalFormattingColor = defaultColor;
     $scope.selectedConditionalFormattingIcon = defaultIcon;
 
-    $scope.config.conditionalFormattingRules = !dxGridExtension.isUndefinedOrNull($scope.config.conditionalFormattingRules) ? _.transform($scope.config.conditionalFormattingRules, function(result, item) {
+    $scope.config.conditionalFormattingRules = !dxGridExtensions.isUndefinedOrNull($scope.config.conditionalFormattingRules) ? _.transform($scope.config.conditionalFormattingRules, function(result, item) {
         result.push(conditionalFormattingConfiguration.getRuleFromdescriptor(item))
     }, []) : [];
 
@@ -27,7 +27,7 @@ dxGridExtensionDemo.controller('conditionalFormatting', function conditionalForm
 
     var updateCreateRuleDisabled = function() {
 
-        if ($scope.conditionalFormatingTargetColumn == null || dxGridExtension.isUndefinedOrNull($scope.selectedConditionalFormattingRule)) {
+        if ($scope.conditionalFormatingTargetColumn == null || dxGridExtensions.isUndefinedOrNull($scope.selectedConditionalFormattingRule)) {
             $scope.isCreateRuleDisabled = true;
             return;
         }
@@ -42,7 +42,7 @@ dxGridExtensionDemo.controller('conditionalFormatting', function conditionalForm
 
     $scope.$watch('selectedConditionalFormattingIcon', function() {
 
-        if (!dxGridExtension.isUndefinedOrNull($scope.selectedConditionalFormattingRule)) {
+        if (!dxGridExtensions.isUndefinedOrNull($scope.selectedConditionalFormattingRule)) {
             $scope.selectedConditionalFormattingRule.icon = $scope.selectedConditionalFormattingIcon;
             applyConditionalFormattingRule();
         }
@@ -50,11 +50,11 @@ dxGridExtensionDemo.controller('conditionalFormatting', function conditionalForm
 
     $scope.$watch('currentConditionalFormattingColor', function() {
 
-        if (dxGridExtension.isUndefinedOrNull($scope.currentConditionalFormattingColor) || dxGridExtension.isUndefinedOrNull($scope.conditionalFormatingGrid) || (dxGridExtension.isUndefinedOrNull($scope.selectedConditionalFormattingRule))) return;
+        if (dxGridExtensions.isUndefinedOrNull($scope.currentConditionalFormattingColor) || dxGridExtensions.isUndefinedOrNull($scope.conditionalFormatingGrid) || (dxGridExtensions.isUndefinedOrNull($scope.selectedConditionalFormattingRule))) return;
 
         var grid = $scope.conditionalFormatingGrid.dxDataGrid('instance');
 
-        if (dxGridExtension.isUndefinedOrNull(grid)) return;
+        if (dxGridExtensions.isUndefinedOrNull(grid)) return;
 
         $scope.selectedConditionalFormattingRule.color = $scope.currentConditionalFormattingColor;
 
@@ -65,7 +65,7 @@ dxGridExtensionDemo.controller('conditionalFormatting', function conditionalForm
 
         updateCreateRuleDisabled();
 
-        if (dxGridExtension.isUndefinedOrNull($scope.selectedConditionalFormattingRule)) return;
+        if (dxGridExtensions.isUndefinedOrNull($scope.selectedConditionalFormattingRule)) return;
 
         $scope.isExpressionDisabled = !$scope.selectedConditionalFormattingRule.isExpressionBased;
 
@@ -76,7 +76,7 @@ dxGridExtensionDemo.controller('conditionalFormatting', function conditionalForm
 
         updateCreateRuleDisabled();
 
-        if (dxGridExtension.isUndefinedOrNull($scope.selectedConditionalFormattingRule)) return;
+        if (dxGridExtensions.isUndefinedOrNull($scope.selectedConditionalFormattingRule)) return;
 
         if ($scope.conditionalFormatingExpressionText === '') {
             $scope.conditionalFormattingResult = [];
@@ -85,7 +85,7 @@ dxGridExtensionDemo.controller('conditionalFormatting', function conditionalForm
 
     $scope.$watch('gridManagement.showConditionalFormattingConsole', function() {
 
-        if (!dxGridExtension.isUndefinedOrNull($scope.conditionalFormatingGrid)) {
+        if (!dxGridExtensions.isUndefinedOrNull($scope.conditionalFormatingGrid)) {
 
             var conditionalFormattingGrid = $scope.conditionalFormatingGrid.dxDataGrid('instance');
 
@@ -98,7 +98,7 @@ dxGridExtensionDemo.controller('conditionalFormatting', function conditionalForm
         $scope.currentConditionalFormattingColor = defaultColor;
         $scope.conditionalFormatingTargetColumn = null;
 
-        if (!dxGridExtension.isUndefinedOrNull($("#conditionFormatingTargetColumn").dxSelectBox("instance")))
+        if (!dxGridExtensions.isUndefinedOrNull($("#conditionFormatingTargetColumn").dxSelectBox("instance")))
             $("#conditionFormatingTargetColumn").dxSelectBox("instance").option("value", null);
     });
 
@@ -106,7 +106,7 @@ dxGridExtensionDemo.controller('conditionalFormatting', function conditionalForm
 
         updateCreateRuleDisabled();
 
-        if (dxGridExtension.isUndefinedOrNull($scope.conditionalFormatingTargetColumn)) return;
+        if (dxGridExtensions.isUndefinedOrNull($scope.conditionalFormatingTargetColumn)) return;
 
         applyConditionalFormattingRule();
     });
@@ -119,7 +119,7 @@ dxGridExtensionDemo.controller('conditionalFormatting', function conditionalForm
     });
 
     $scope.$watch('selectedExistingConditionalFormattingRule', function() {
-        $scope.isExistingRuleActionDisabled = dxGridExtension.isUndefinedOrNull($scope.selectedExistingConditionalFormattingRule);
+        $scope.isExistingRuleActionDisabled = dxGridExtensions.isUndefinedOrNull($scope.selectedExistingConditionalFormattingRule);
     });
 
     $scope.consitionalFormattingAvailableColumnsSelectBoxOptions = {
@@ -175,7 +175,7 @@ dxGridExtensionDemo.controller('conditionalFormatting', function conditionalForm
         },
         onClick: function(e) {
 
-            if (dxGridExtension.isUndefinedOrNull($scope.gridInstance)) return;
+            if (dxGridExtensions.isUndefinedOrNull($scope.gridInstance)) return;
 
             var rule = conditionalFormattingConfiguration.createRule(
                 $scope.selectedConditionalFormattingRule.text,
@@ -353,7 +353,7 @@ dxGridExtensionDemo.controller('conditionalFormatting', function conditionalForm
 
         var grid = $scope.conditionalFormatingGrid.dxDataGrid('instance');
 
-        if (dxGridExtension.isUndefinedOrNull($scope.selectedConditionalFormattingRule)) return;
+        if (dxGridExtensions.isUndefinedOrNull($scope.selectedConditionalFormattingRule)) return;
 
         var rule = conditionalFormattingConfiguration.createRule(
             $scope.selectedConditionalFormattingRule.text,

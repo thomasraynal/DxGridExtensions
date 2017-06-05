@@ -1,7 +1,7 @@
-dxGridExtensionDemo.directive('treeGrid', function($timeout, $controller, customColumnConfiguration, conditionalFormattingConfiguration) {
+dxGridExtension.directive('treeGrid', function($timeout, $controller, customColumnConfiguration, conditionalFormattingConfiguration) {
     return {
         restrict: "E",
-        templateUrl: 'html/view.grid.tree.html',
+        templateUrl: 'view.grid.tree.html',
         scope: true,
         link: {
             pre: function(scope, element, attrs) {
@@ -22,7 +22,7 @@ dxGridExtensionDemo.directive('treeGrid', function($timeout, $controller, custom
                 scope.widget.currentColumn = null;
                 scope.widget.currentRow = null;
 
-                var columns = dxGridExtension.isUndefinedOrNull(getConfig('columns')) ? null : getConfig('columns');
+                var columns = dxGridExtensions.isUndefinedOrNull(getConfig('columns')) ? null : getConfig('columns');
 
                 setConfig('columns', columns);
 
@@ -32,7 +32,7 @@ dxGridExtensionDemo.directive('treeGrid', function($timeout, $controller, custom
 
                     var dataSource = Object.byString(scope, scope.treeListOptions.bindingOptions.dataSource.dataPath);
 
-                    if (dxGridExtension.isUndefinedOrNull(dataSource) || dataSource.length == 0) return;
+                    if (dxGridExtensions.isUndefinedOrNull(dataSource) || dataSource.length == 0) return;
 
                     var template = dataSource[0];
 
@@ -61,7 +61,7 @@ dxGridExtensionDemo.directive('treeGrid', function($timeout, $controller, custom
                             for (var i = 0; i < dataSource.length; i++) {
 
 
-                                if (!dxGridExtension.isUndefinedOrNull(dataSource[i][field])) {
+                                if (!dxGridExtensions.isUndefinedOrNull(dataSource[i][field])) {
 
                                     if (typeof(dataSource[i][field]) === "boolean") {
 
@@ -70,14 +70,14 @@ dxGridExtensionDemo.directive('treeGrid', function($timeout, $controller, custom
                                         break;
                                     }
 
-                                    if (window.dxGridExtension.isInt(dataSource[i][field])) {
+                                    if (window.dxGridExtensions.isInt(dataSource[i][field])) {
 
                                         columnOption.dataType = "number";
                                         columnOption.format = { type: 'fixedpoint', precision: 0 };
                                         break;
                                     }
 
-                                    if (window.dxGridExtension.isFloat(dataSource[i][field])) {
+                                    if (window.dxGridExtensions.isFloat(dataSource[i][field])) {
 
                                         columnOption.dataType = "number";
                                         columnOption.summaryType = "sum";
@@ -107,7 +107,7 @@ dxGridExtensionDemo.directive('treeGrid', function($timeout, $controller, custom
                 };
 
                 function getGridInstance() {
-                    if (dxGridExtension.isUndefinedOrNull(scope.$control)) return null;
+                    if (dxGridExtensions.isUndefinedOrNull(scope.$control)) return null;
                     try {
                         //if the grid has been rendered
                         var grid = (scope.widget[scope.treeListName].NAME) ? scope.widget[scope.treeListName] : scope.$control.find('#treeGrid').dxTreeList("instance");
@@ -120,12 +120,12 @@ dxGridExtensionDemo.directive('treeGrid', function($timeout, $controller, custom
                 };
 
                 function setConfig(index, value) {
-                    if (dxGridExtension.isUndefinedOrNull(scope.widget.config[scope.treeListName])) scope.widget.config[scope.treeListName] = {};
+                    if (dxGridExtensions.isUndefinedOrNull(scope.widget.config[scope.treeListName])) scope.widget.config[scope.treeListName] = {};
                     scope.widget.config[scope.treeListName][index] = value;
                 };
 
                 function getConfig(index) {
-                    if (dxGridExtension.isUndefinedOrNull(scope.widget.config[scope.treeListName])) scope.widget.config[scope.treeListName] = {};
+                    if (dxGridExtensions.isUndefinedOrNull(scope.widget.config[scope.treeListName])) scope.widget.config[scope.treeListName] = {};
                     return scope.widget.config[scope.treeListName][index];
                 };
 
@@ -136,7 +136,7 @@ dxGridExtensionDemo.directive('treeGrid', function($timeout, $controller, custom
                         var grid = getGridInstance();
 
                         //fixed conditional formatting
-                        if (dxGridExtension.isUndefinedOrNull(grid.option("onCellPrepared"))) {
+                        if (dxGridExtensions.isUndefinedOrNull(grid.option("onCellPrepared"))) {
                             addEventHandler("onCellPrepared", function(options) {
                                 _.each(getConfig('conditionalFormattingRules'), function(rule) {
 
@@ -156,7 +156,7 @@ dxGridExtensionDemo.directive('treeGrid', function($timeout, $controller, custom
 
                         addEventHandler("customizeColumns", function(columns) {
                             _.each(columns, function(column) {
-                                column.groupCellTemplate = window.dxGridExtension.groupCellTemplate;
+                                column.groupCellTemplate = window.dxGridExtensions.groupCellTemplate;
                             });
                         });
 

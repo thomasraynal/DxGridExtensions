@@ -1,4 +1,4 @@
-dxGridExtensionDemo.service('customColumnConfiguration', function($log) {
+dxGridExtension.service('customColumnConfiguration', function($log) {
 
     this.createCustomColumn = function(name, expression, format) {
 
@@ -13,7 +13,7 @@ dxGridExtensionDemo.service('customColumnConfiguration', function($log) {
 
         try {
 
-
+                 var self = this;
 
             var expression = rule.expression;
             var replacement = {};
@@ -21,7 +21,7 @@ dxGridExtensionDemo.service('customColumnConfiguration', function($log) {
 
             _.forEach(datasource, function(item) {
 
-                dxGridExtension.initFormulas(this);
+                dxGridExtensions.initFormulas(self);
 
                 _.forEach(item, function(value, key) {
 

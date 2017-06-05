@@ -1,4 +1,4 @@
-dxGridExtensionDemo.controller('customColumns', function customColumnsCrtl($scope, $controller, $timeout, $log, customColumnConfiguration) {
+dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $controller, $timeout, $log, customColumnConfiguration) {
 
     $scope.gridManagement.showCustomColumnConsole = false;
 
@@ -13,23 +13,23 @@ dxGridExtensionDemo.controller('customColumns', function customColumnsCrtl($scop
     $scope.selectedExistingCustomColumn = null;
     $scope.isExistingCustomColumnActionDisabled = false;
 
-    if (dxGridExtension.isUndefinedOrNull($scope.config.customColumns)) $scope.config.customColumns = [];
+    if (dxGridExtensions.isUndefinedOrNull($scope.config.customColumns)) $scope.config.customColumns = [];
 
     $scope.$watch(function() {
         return $scope.gridManagement.showCustomColumnConsole;
     }, function() {
 
         if (!$scope.gridManagement.showCustomColumnConsole) return;
-        if (!dxGridExtension.isUndefinedOrNull($scope.customColumnGrid)) $scope.customColumnGrid.dxDataGrid('instance').option('dataSource', null);
+        if (!dxGridExtensions.isUndefinedOrNull($scope.customColumnGrid)) $scope.customColumnGrid.dxDataGrid('instance').option('dataSource', null);
         $scope.customColumnExpressionText = '';
         $scope.customColumnName = '';
         $scope.customColumnSelectedAvailableColumn = null;
 
         //refacto :dx angular control extension?
-        if (!dxGridExtension.isUndefinedOrNull($("#customColumnAvailableColumnsFormat").dxSelectBox("instance")))
+        if (!dxGridExtensions.isUndefinedOrNull($("#customColumnAvailableColumnsFormat").dxSelectBox("instance")))
             $("#customColumnAvailableColumnsFormat").dxSelectBox("instance").option("value", null);
 
-        if (!dxGridExtension.isUndefinedOrNull($("#existingCustomColumns").dxSelectBox("instance")))
+        if (!dxGridExtensions.isUndefinedOrNull($("#existingCustomColumns").dxSelectBox("instance")))
             $("#existingCustomColumns").dxSelectBox("instance").option("value", null);
 
         $scope.selectedExistingCustomColumn = '';
@@ -49,7 +49,7 @@ dxGridExtensionDemo.controller('customColumns', function customColumnsCrtl($scop
     });
 
     $scope.$watch('selectedExistingCustomColumn', function() {
-        $scope.isExistingCustomColumnActionDisabled = dxGridExtension.isUndefinedOrNull($scope.selectedExistingCustomColumn) || $scope.selectedExistingCustomColumn == '';
+        $scope.isExistingCustomColumnActionDisabled = dxGridExtensions.isUndefinedOrNull($scope.selectedExistingCustomColumn) || $scope.selectedExistingCustomColumn == '';
     });
 
     $scope.customColumnResultGridOptions = {
@@ -149,7 +149,7 @@ dxGridExtensionDemo.controller('customColumns', function customColumnsCrtl($scop
 
         onClick: function(e) {
 
-            if (dxGridExtension.isUndefinedOrNull($scope.gridInstance)) return;
+            if (dxGridExtensions.isUndefinedOrNull($scope.gridInstance)) return;
 
             $scope.updateGrid(() => {
 
@@ -251,7 +251,7 @@ dxGridExtensionDemo.controller('customColumns', function customColumnsCrtl($scop
     };
 
     function updateCanCreateColumn() {
-        $scope.cannotCreateColumn = $scope.selectedCustomColumnFormating == '' || $scope.customColumnExpressionText == '' || dxGridExtension.isUndefinedOrNull($scope.customColumnName) || dxGridExtension.isUndefinedOrNull($scope.selectedCustomColumnFormating);
+        $scope.cannotCreateColumn = $scope.selectedCustomColumnFormating == '' || $scope.customColumnExpressionText == '' || dxGridExtensions.isUndefinedOrNull($scope.customColumnName) || dxGridExtensions.isUndefinedOrNull($scope.selectedCustomColumnFormating);
     };
 
     function applyCustomColumnExpression() {

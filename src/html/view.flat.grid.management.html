@@ -4,7 +4,7 @@
             <div class="dx-fieldset">
                 <div class="dx-fieldset-header">Select an existing rule..</div>
                 <div class="dx-field">
-                    <div style="width:100%;">
+                    <div class="field-container">
                         <div style="float:left;width:50%;" id="existingConditionalFormattingRules" dx-select-box="existingConditionalFormattingRulesSelectBoxOptions"></div>
                         <div style="float:right;width:20%;" dx-button="deleteExistingRuleButtonOptions"></div>
                         <div style="float:right;width:20%;" dx-button="loadExistingRuleButtonOptions"></div>
@@ -14,14 +14,14 @@
             <div class="dx-fieldset">
                 <div class="dx-fieldset-header">...or create a new one</div>
                 <div class="dx-field">
-                    <div style="width:100%;">
+                    <div class="field-container">
                         <div style="float:left;width:49%;margin-right:5px;" id="conditionFormatingTargetColumn" dx-select-box="conditionalFormatingAvailableTargetColumnsOptions"></div>
                         <div style="float:right;width:50%;" dx-select-box="consitionalFormattingAvailableColumnsSelectBoxOptions"></div>
                     </div>
                     <div style="float:left;width:100%;margin-top:5px;" dx-text-box="conditionalFormatingExpressionTextBoxOptions"></div>
                 </div>
             </div>
-            <div style="width:100%;">
+            <div class="field-container">
                 <div style="margin:5px;float:left;width:65%;">
                     <div style="top:50px;margin:5px;width:100%;" id="ruleTestingGrid" dx-data-grid="conditionalFormattingResultGridPopupOptions"></div>
                 </div>
@@ -31,7 +31,7 @@
                     <div style="margin-top:10px;" dx-select-box="availableIconsSelectBoxOptions"></div>
                 </div>
             </div>
-            <div style="width:100%;">
+            <div class="field-container">
                 <div style="float:left;width:48%;margin-bottom:20px;" dx-button="conditionalFormattingTestExpressionButtonOptions"></div>
                 <div style="float:right;width:48%;margin-bottom:20px;" dx-button="createConditionalFormattingButtonOptions"></div>
             </div>

@@ -1,15 +1,17 @@
-dxGridExtensionDemo.factory('conditionalFormattingConfiguration', function($log) {
+dxGridExtension.factory('conditionalFormattingConfiguration', function($log) {
 
 
     function applyConditionalFormattingExpressionOnCell(cell, rule, dataSource) {
 
         try {
             if (cell.rowType == 'data' &&
-                !dxGridExtension.isUndefinedOrNull(rule) &&
-                !dxGridExtension.isUndefinedOrNull(cell.value) &&
+                !dxGridExtensions.isUndefinedOrNull(rule) &&
+                !dxGridExtensions.isUndefinedOrNull(cell.value) &&
                 rule.target == cell.column.dataField &&
                 cell.data != null
             ) {
+
+                var self = this;
 
                 if (rule.isExpressionBased) {
 
@@ -21,7 +23,7 @@ dxGridExtensionDemo.factory('conditionalFormattingConfiguration', function($log)
 
                     _.forEach(row, function(value, key) {
 
-                        dxGridExtension.initFormulas(this);
+                        dxGridExtensions.initFormulas(self);
 
                         var replacement = (typeof value) === "string" ? "'" + value + "'" : value;
                         processedExpression = processedExpression.split('[' + key + ']').join(" " + replacement + " ");
@@ -41,8 +43,7 @@ dxGridExtensionDemo.factory('conditionalFormattingConfiguration', function($log)
             $log.error(e);
         }
     };
-
-
+ 
     //refacto : otherway arround, list of rules to menu 
     var rules = [{
         "key": "Auto set",
@@ -181,7 +182,7 @@ dxGridExtensionDemo.factory('conditionalFormattingConfiguration', function($log)
 
         var rule = getRuleTemplate(name);
 
-        if (dxGridExtension.isUndefinedOrNull(rule)) throw new Error("Rule " + name + " does not exist");
+        if (dxGridExtensions.isUndefinedOrNull(rule)) throw new Error("Rule " + name + " does not exist");
 
         rule.target = target;
         rule.expression = expression;

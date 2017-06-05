@@ -1,4 +1,4 @@
-dxGridExtensionDemo.controller('columnChooser', function columnChooserCrtl($scope, $controller, $timeout, customColumnConfiguration) {
+dxGridExtension.controller('columnChooser', function columnChooserCrtl($scope, $controller, $timeout, customColumnConfiguration) {
 
     $scope.columnChooserGrid;
 
@@ -176,7 +176,7 @@ dxGridExtensionDemo.controller('columnChooser', function columnChooserCrtl($scop
 
             if (item.value.dataType == column.dataType) {
 
-                if (dxGridExtension.isUndefinedOrNull(item.value.format)) return false;
+                if (dxGridExtensions.isUndefinedOrNull(item.value.format)) return false;
 
                 if (item.value.format.type == column.format.type &&
                     item.value.format.precision == column.format.precision) return true;
@@ -249,7 +249,7 @@ dxGridExtensionDemo.controller('columnChooser', function columnChooserCrtl($scop
                 var draggingRowKey = ui.draggable.data('keyValue');
                 var targetRowKey = $(this).data('keyValue');
 
-                if (dxGridExtension.isUndefinedOrNull(targetRowKey)) return;
+                if (dxGridExtensions.isUndefinedOrNull(targetRowKey)) return;
 
                 var draggingIndex = null;
                 var targetIndex = null;
@@ -283,7 +283,7 @@ dxGridExtensionDemo.controller('columnChooser', function columnChooserCrtl($scop
         column.dataType = format.value.dataType;
         column.format = { type: null, precision: null };
 
-        if (!dxGridExtension.isUndefinedOrNull(format.value.format)) {
+        if (!dxGridExtensions.isUndefinedOrNull(format.value.format)) {
             column.format.type = format.value.format.type;
             column.format.precision = format.value.format.precision;
         }
@@ -292,9 +292,9 @@ dxGridExtensionDemo.controller('columnChooser', function columnChooserCrtl($scop
             return item.column === column.dataField;
         });
 
-        if (!dxGridExtension.isUndefinedOrNull(groupItem)) {
+        if (!dxGridExtensions.isUndefinedOrNull(groupItem)) {
 
-            if (dxGridExtension.isUndefinedOrNull(format.value.format)) {
+            if (dxGridExtensions.isUndefinedOrNull(format.value.format)) {
                 groupItem.valueFormat.type = null;
                 groupItem.valueFormat.precision = null;
             } else {
@@ -320,7 +320,7 @@ dxGridExtensionDemo.controller('columnChooser', function columnChooserCrtl($scop
             return item.column === dataField;
         });
 
-        if (!dxGridExtension.isUndefinedOrNull(result)) return;
+        if (!dxGridExtensions.isUndefinedOrNull(result)) return;
 
         var group = createDefaultNumberGroupItem(dataField);
         $scope.config.groupItems.push(group);
@@ -335,7 +335,7 @@ dxGridExtensionDemo.controller('columnChooser', function columnChooserCrtl($scop
             dataField: column.dataField,
             caption: column.caption + '',
             visible: column.visible,
-            hasAggregation: !dxGridExtension.isUndefinedOrNull(_.find($scope.config.groupItems, function(group) {
+            hasAggregation: !dxGridExtensions.isUndefinedOrNull(_.find($scope.config.groupItems, function(group) {
                 return group.column == column.dataField;
             })),
             position: column.visibleIndex,

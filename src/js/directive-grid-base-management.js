@@ -1,4 +1,4 @@
-dxGridExtensionDemo.controller('baseGridManagement', function baseGridManagementCrtl($scope, $controller, $attrs) {
+dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl($scope, $controller, $attrs) {
 
     $scope.widget = $scope.$parent;
     $scope.gridName = $attrs.bindto;
@@ -21,7 +21,7 @@ dxGridExtensionDemo.controller('baseGridManagement', function baseGridManagement
 
     function updateAvailableColumns() {
 
-        if (dxGridExtension.isUndefinedOrNull($scope.config.columns)) return;
+        if (dxGridExtensions.isUndefinedOrNull($scope.config.columns)) return;
         $scope.dataSource = $scope.widget[$attrs.datasource];
         $scope.availableColumns = _.sortBy(_.transform($scope.config.columns.concat(null === $scope.config.customColumns ? [] : $scope.config.customColumns), function(result, item) { result.push(item.dataField) }, []), function(e) {
             return e

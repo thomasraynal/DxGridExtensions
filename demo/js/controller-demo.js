@@ -1,8 +1,8 @@
 dxGridExtensionDemo
     .controller('demo', function demoCrtl($scope) {
 
-        $scope.demoFlatData = window.dxGridExtension.stockData;
-        $scope.demoTreeData = window.dxGridExtension.cashData;
+        $scope.demoFlatData = window.dxGridExtensionsDemo.stockData;
+        $scope.demoTreeData = window.dxGridExtensionsDemo.cashData;
 
         $scope.flatGrid = {};
         $scope.treeGrid = {};
@@ -11,7 +11,7 @@ dxGridExtensionDemo
             return item.uniqueParentId === null;
         });
 
-        var height = window.outerHeight-100;
+        var height = window.outerHeight - 100;
 
         $scope.rootId = [root.uniqueId];
 

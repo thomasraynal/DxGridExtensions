@@ -1,4 +1,6 @@
- window.dxGridExtension.stockData = [{
+ window.dxGridExtensionsDemo ={};
+
+ window.dxGridExtensionsDemo.stockData = [{
      "symbol": "III",
      "company": "3i Group",
      "price": 376.6,
@@ -708,7 +710,7 @@
  }];
 
 
- window.dxGridExtension.cashData = [{
+ window.dxGridExtensionsDemo.cashData = [{
      "name": "FUND",
      "id": "2141202457",
      "parentId": "-2004587468",
