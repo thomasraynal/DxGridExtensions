@@ -1,16 +1,16 @@
 dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl($scope, $controller, $attrs) {
 
     $scope.widget = $scope.$parent;
-    $scope.gridName = $attrs.bindto;
+    $scope.gridName = $attrs.instance;
     if (!$scope.widget.gridManagement) $scope.widget.gridManagement = {};
 
     if (!$scope.widget.config) {
         $scope.widget.config = {};
-        $scope.widget.config[$attrs.bindto] = {};
+        $scope.widget.config[$attrs.instance] = {};
     }
 
-    $scope.gridManagement = $scope.widget.gridManagement[$attrs.bindto];
-    $scope.config = $scope.widget.config[$attrs.bindto];
+    $scope.gridManagement = $scope.widget.gridManagement[$attrs.instance];
+    $scope.config = $scope.widget.config[$attrs.instance];
 
     $scope.updateGrid = (action) => {
 
@@ -56,25 +56,25 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
     });
 
     $scope.$watch(function() {
-        return $scope.widget[$attrs.bindto];
+        return $scope.widget[$attrs.instance];
     }, function() {
 
-        $scope.gridInstance = $scope.widget[$attrs.bindto];
+        $scope.gridInstance = $scope.widget[$attrs.instance];
     });
 
     $scope.$watch(function() {
-        return $scope.widget.gridManagement[$attrs.bindto].currentColumn;
+        return $scope.widget.gridManagement[$attrs.instance].currentColumn;
     }, function() {
 
-        $scope.currentColumn = $scope.widget.gridManagement[$attrs.bindto].currentColumn;
+        $scope.currentColumn = $scope.widget.gridManagement[$attrs.instance].currentColumn;
     });
 
 
     $scope.$watch(function() {
-        return $scope.widget.gridManagement[$attrs.bindto].currentRow;
+        return $scope.widget.gridManagement[$attrs.instance].currentRow;
     }, function() {
 
-        $scope.currentRow = $scope.widget.gridManagement[$attrs.bindto].currentRow;
+        $scope.currentRow = $scope.widget.gridManagement[$attrs.instance].currentRow;
     });
 
 

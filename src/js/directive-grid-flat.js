@@ -9,7 +9,7 @@ dxGridExtension.directive('flatGrid', function($timeout, $controller, customColu
 
             //refacto: implement inheritance
             if (!scope.widget.config) scope.widget.config = {};
-            scope.widget.config[attrs.bindto] = {};
+            scope.widget.config[attrs.instance] = {};
 
             scope.flatGridName = attrs.instance;
             scope.flatGridOptions = scope.widget[attrs.options];

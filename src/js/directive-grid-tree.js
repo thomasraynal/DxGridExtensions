@@ -10,7 +10,7 @@ dxGridExtension.directive('treeGrid', function($timeout, $controller, customColu
 
                 //refacto: implement inheritance
                 if (!scope.widget.config) scope.widget.config = {};
-                scope.widget.config[attrs.bindto] = {};
+                scope.widget.config[attrs.instance] = {};
 
                 scope.treeListName = attrs.instance;
                 scope.treeListOptions = scope.widget[attrs.options];

@@ -1,15 +1,11 @@
 dxGridExtension.controller('columnChooser', function columnChooserCrtl($scope, $controller, $timeout, customColumnConfiguration) {
 
     $scope.columnChooserGrid;
-
     $scope.gridManagement.showColumnChooserConsole = false;
-
     $scope.getAllColumns = getAllColumns;
     $scope.getColumnFormat = getColumnFormat;
 
-    $scope.$watch(function() {
-        return $scope.gridManagement.showColumnChooserConsole;
-    }, function() {
+    $scope.$watch(() => $scope.gridManagement.showColumnChooserConsole, function() {
 
         if (!$scope.gridManagement.showColumnChooserConsole) return;
 
@@ -21,12 +17,14 @@ dxGridExtension.controller('columnChooser', function columnChooserCrtl($scope, $
             var columns = getAllColumns();
 
             var i = 0;
+
             _.forEach(columns, function(column) {
                 $scope.columnChooserDataSource.insert(createColumnChooserColumnData(column, i++));
             });
 
 
             $scope.columnChooserGrid.dxDataGrid("instance").refresh();
+
         }, 500);
     });
 
@@ -144,10 +142,12 @@ dxGridExtension.controller('columnChooser', function columnChooserCrtl($scope, $
                             column.visibleIndex = item.position;
                             column.caption = item.caption;
                             column.visible = item.visible;
-                            if (item.hasAggregation)
+                            
+                            if (item.hasAggregation) {
                                 createAggregation(item.dataField);
-                            else
+                            } else {
                                 removeAggregation(item.dataField);
+                            }
 
                             var format = _.find(customColumnConfiguration.customColumnFormats, function(formatting) {
                                 return formatting.text == item.format
