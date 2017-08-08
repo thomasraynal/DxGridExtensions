@@ -1,11 +1,16 @@
 # dx.grid.extensions
 
-This is a comprehensive wrapper around devexpress js grids which offers conditional formatting features, expression editors, on the fly custom column creation and automatic schema creation.
+A comprehensive wrapper around devexpress js grids which include conditional formatting features, expression editors, on the fly custom column creation and automatic schema creation.
 
-At the time, those features are tightly coupled to our widget framework and we're working to modularize it as part of a huge code base spring cleanup. 
+## Conditionnal Formatting
+# ![Alt text](doc/tree.png "Conditional formatting with tree view")
 
-Given the huge demand by devexpress users for those features, it's seems a good idea to open source it.
+# ![Alt text](doc/flat.png "Conditional formatting with flat view")
 
-# ![Alt text](doc/tree.png "Example conditionnal formatting with tree view")
+# ![Alt text](doc/formatting.png "Conditional formatting editor")
 
-# ![Alt text](doc/flat.png "Example conditional formatting with flat view")
+## Custom Column
+# ![Alt text](doc/custom.png "Custom Column editor")
+
+## Columns Management
+# ![Alt text](doc/management.png "Columns management board")
