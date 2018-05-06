@@ -13,8 +13,7 @@ dxGridExtension.service('customColumnConfiguration', function($log) {
 
         try {
 
-                 var self = this;
-
+            var self = this;
             var expression = rule.expression;
             var replacement = {};
             var processedExpression = expression;

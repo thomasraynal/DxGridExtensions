@@ -5,21 +5,21 @@ dxGridExtension.directive('flatGrid', function($timeout, $controller, customColu
         scope: true,
         link: function(scope, element, attrs) {
 
-            scope.widget = scope.$parent;
+            scope.self = scope.$parent;
 
             //refacto: implement inheritance
-            if (!scope.widget.config) scope.widget.config = {};
-            scope.widget.config[attrs.instance] = {};
+            if (!scope.self.config) scope.self.config = {};
+            scope.self.config[attrs.instance] = {};
 
             scope.flatGridName = attrs.instance;
-            scope.flatGridOptions = scope.widget[attrs.options];
+            scope.flatGridOptions = scope.self[attrs.options];
             scope.$control = element;
 
-            if (!scope.widget.gridManagement) scope.widget.gridManagement = {};
-            scope.widget.gridManagement[scope.flatGridName] = {};
+            if (!scope.self.gridManagement) scope.self.gridManagement = {};
+            scope.self.gridManagement[scope.flatGridName] = {};
 
-            scope.widget.currentColumn = null;  
-            scope.widget.currentRow = null;
+            scope.self.currentColumn = null;  
+            scope.self.currentRow = null;
 
             var columns = dxGridExtensions.isUndefinedOrNull(getConfig('columns')) ? null : getConfig('columns');
             var groupItems = dxGridExtensions.isUndefinedOrNull(getConfig('groupItems')) ? null : getConfig('groupItems');
@@ -141,8 +141,8 @@ dxGridExtension.directive('flatGrid', function($timeout, $controller, customColu
                 if (dxGridExtensions.isUndefinedOrNull(scope.$control)) return null;
                 try {
                     //if the grid has been rendered
-                    var grid = (scope.widget[scope.flatGridName].NAME) ? scope.widget[scope.flatGridName] : scope.$control.find('#flatGrid').dxDataGrid("instance");
-                    if (scope.widget[scope.flatGridName] !== grid) scope.widget[scope.flatGridName] = grid;
+                    var grid = (scope.self[scope.flatGridName].NAME) ? scope.self[scope.flatGridName] : scope.$control.find('#flatGrid').dxDataGrid("instance");
+                    if (scope.self[scope.flatGridName] !== grid) scope.self[scope.flatGridName] = grid;
                     return grid;
 
                 } catch (ex) {
@@ -151,13 +151,13 @@ dxGridExtension.directive('flatGrid', function($timeout, $controller, customColu
             };
 
             function setConfig(index, value) {
-                if (dxGridExtensions.isUndefinedOrNull(scope.widget.config[scope.flatGridName])) scope.widget.config[scope.flatGridName] = {};
-                scope.widget.config[scope.flatGridName][index] = value;
+                if (dxGridExtensions.isUndefinedOrNull(scope.self.config[scope.flatGridName])) scope.self.config[scope.flatGridName] = {};
+                scope.self.config[scope.flatGridName][index] = value;
             };
 
             function getConfig(index) {
-                if (dxGridExtensions.isUndefinedOrNull(scope.widget.config[scope.flatGridName])) scope.widget.config[scope.flatGridName] = {};
-                return scope.widget.config[scope.flatGridName][index];
+                if (dxGridExtensions.isUndefinedOrNull(scope.self.config[scope.flatGridName])) scope.self.config[scope.flatGridName] = {};
+                return scope.self.config[scope.flatGridName][index];
             };
 
             function initializeInternal() {
@@ -212,40 +212,40 @@ dxGridExtension.directive('flatGrid', function($timeout, $controller, customColu
 
             function getGridMenuItems(element) {
 
-                scope.widget.gridManagement[scope.flatGridName].currentColumn = element.column;
-                scope.widget.gridManagement[scope.flatGridName].currentRow = element.row;
+                scope.self.gridManagement[scope.flatGridName].currentColumn = element.column;
+                scope.self.gridManagement[scope.flatGridName].currentRow = element.row;
 
                 return [{
                     text: 'Management - Columns',
                     onItemClick: function() {
-                        scope.widget.gridManagement[scope.flatGridName].showColumnChooserConsole = true;
+                        scope.self.gridManagement[scope.flatGridName].showColumnChooserConsole = true;
                     }
                 }, {
                     text: 'Management - Conditional Formatting',
                     onItemClick: function() {
 
 
-                        scope.widget.gridManagement[scope.flatGridName].showConditionalFormattingConsole = true;
+                        scope.self.gridManagement[scope.flatGridName].showConditionalFormattingConsole = true;
 
                     }
                 }, {
                     text: 'Management - Custom Columns',
                     onItemClick: function() {
 
-                        scope.widget.gridManagement[scope.flatGridName].showCustomColumnConsole = true;
+                        scope.self.gridManagement[scope.flatGridName].showCustomColumnConsole = true;
                     }
                 }, {
                     text: 'Current Column - Modify',
                     onItemClick: function() {
 
-                        scope.widget.gridManagement[scope.flatGridName].showColumnManagementConsole = true;
+                        scope.self.gridManagement[scope.flatGridName].showColumnManagementConsole = true;
                     }
                 }, {
                     text: 'Current Column - Remove Aggregation',
                     onItemClick: function() {
 
-                        _.remove(scope.widget.config[scope.flatGridName].groupItems, function(item) {
-                            return item.column === scope.widget.gridManagement[scope.flatGridName].currentColumn.dataField;
+                        _.remove(scope.self.config[scope.flatGridName].groupItems, function(item) {
+                            return item.column === scope.self.gridManagement[scope.flatGridName].currentColumn.dataField;
                         });
 
                     }
@@ -253,19 +253,19 @@ dxGridExtension.directive('flatGrid', function($timeout, $controller, customColu
                     text: 'Current Column - Create Aggregation',
                     onItemClick: function() {
 
-                        if (null == scope.widget.gridManagement[scope.flatGridName].currentColumn || scope.widget.gridManagement[scope.flatGridName].currentColumn.dataType == "string") return;
+                        if (null == scope.self.gridManagement[scope.flatGridName].currentColumn || scope.self.gridManagement[scope.flatGridName].currentColumn.dataType == "string") return;
 
                         var groupItems = getConfig('groupItems');
                         if (dxGridExtensions.isUndefinedOrNull(groupItems)) return;
 
-                        var result = _.find(scope.widget.config.groupItems, function(item) {
-                            return item.column === scope.widget.gridManagement[scope.flatGridName].currentColumn.dataField;
+                        var result = _.find(scope.self.config.groupItems, function(item) {
+                            return item.column === scope.self.gridManagement[scope.flatGridName].currentColumn.dataField;
                         });
 
                         if (!dxGridExtensions.isUndefinedOrNull(result)) return;
 
-                        var group = createDefaultNumberGroupItem(scope.widget.gridManagement[scope.flatGridName].currentColumn.dataField);
-                        scope.widget.config[scope.flatGridName].groupItems.push(group);
+                        var group = createDefaultNumberGroupItem(scope.self.gridManagement[scope.flatGridName].currentColumn.dataField);
+                        scope.self.config[scope.flatGridName].groupItems.push(group);
 
                     }
                 }]
@@ -282,12 +282,12 @@ dxGridExtension.directive('flatGrid', function($timeout, $controller, customColu
                 };
             };
 
-            scope.widget.exportExcel = function() {
+            scope.self.exportExcel = function() {
 
                 var grid = getGridInstance();
                 grid.option("export", {
                     enabled: false,
-                    fileName: scope.widget.container._config.title + "_" + moment(scope.widget.workspace.date).format('YYYYMMDD')
+                    fileName: scope.self.container._config.title + "_" + moment(scope.self.workspace.date).format('YYYYMMDD')
                 });
 
                 grid.exportToExcel();

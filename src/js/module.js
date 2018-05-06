@@ -17,9 +17,14 @@
         return !isNaN(Number(n)) && Number(n) % 1 !== 0;
     };
 
+    window.dxGridExtensions.resetSelectBoxValue = function(selectBoxId) {
+
+        var instance = $(selectBoxId).dxSelectBox("instance");
+        if (dxGridExtensions.isUndefinedOrNull(instance)) return;
+        instance.option("value", null);
+    };
 
     window.dxGridExtensions.initFormulas = function(scope) {
-
 
         scope.AND = formulajs.AND;
         scope.OR = formulajs.OR;
@@ -66,6 +71,14 @@
         }
         return o;
     }
+
+
+    // window.dxGridExtensions.createFlatGrid = function(flatgridConfig, dataSource) {
+    //     flatgridConfig.bindingOptions.dataSource = 'widget.demoFlatData';
+    //     flatgridConfig.bindingOptions['summary.groupItems'] = 'widget.config.flatGrid.groupItems';
+    //     flatgridConfig.bindingOptions.columns = 'widget.config.flatGrid.columns';
+    // };
+
 })();
 
 angular.module('dxGridExtensionTemplates', []);

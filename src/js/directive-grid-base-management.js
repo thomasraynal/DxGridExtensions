@@ -1,16 +1,16 @@
 dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl($scope, $controller, $attrs) {
 
-    $scope.widget = $scope.$parent;
+    $scope.self = $scope.$parent;
     $scope.gridName = $attrs.instance;
-    if (!$scope.widget.gridManagement) $scope.widget.gridManagement = {};
+    if (!$scope.self.gridManagement) $scope.self.gridManagement = {};
 
-    if (!$scope.widget.config) {
-        $scope.widget.config = {};
-        $scope.widget.config[$attrs.instance] = {};
+    if (!$scope.self.config) {
+        $scope.self.config = {};
+        $scope.self.config[$attrs.instance] = {};
     }
 
-    $scope.gridManagement = $scope.widget.gridManagement[$attrs.instance];
-    $scope.config = $scope.widget.config[$attrs.instance];
+    $scope.gridManagement = $scope.self.gridManagement[$attrs.instance];
+    $scope.config = $scope.self.config[$attrs.instance];
 
     $scope.updateGrid = (action) => {
 
@@ -22,17 +22,17 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
     function updateAvailableColumns() {
 
         if (dxGridExtensions.isUndefinedOrNull($scope.config.columns)) return;
-        $scope.dataSource = $scope.widget[$attrs.datasource];
+        $scope.dataSource = $scope.self[$attrs.datasource];
         $scope.availableColumns = _.sortBy(_.transform($scope.config.columns.concat(null === $scope.config.customColumns ? [] : $scope.config.customColumns), function(result, item) { result.push(item.dataField) }, []), function(e) {
             return e
         });
     };
 
     $scope.$watch(function() {
-        return $scope.widget[$attrs.datasource];
+        return $scope.self[$attrs.datasource];
     }, function() {
 
-        $scope.dataSource = $scope.widget[$attrs.datasource];
+        $scope.dataSource = $scope.self[$attrs.datasource];
         updateAvailableColumns()
 
         $scope.availableColumns = _.sortBy(_.transform($scope.config.columns, function(result, item) { result.push(item.dataField) }, []), function(e) {
@@ -56,25 +56,25 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
     });
 
     $scope.$watch(function() {
-        return $scope.widget[$attrs.instance];
+        return $scope.self[$attrs.instance];
     }, function() {
 
-        $scope.gridInstance = $scope.widget[$attrs.instance];
+        $scope.gridInstance = $scope.self[$attrs.instance];
     });
 
     $scope.$watch(function() {
-        return $scope.widget.gridManagement[$attrs.instance].currentColumn;
+        return $scope.self.gridManagement[$attrs.instance].currentColumn;
     }, function() {
 
-        $scope.currentColumn = $scope.widget.gridManagement[$attrs.instance].currentColumn;
+        $scope.currentColumn = $scope.self.gridManagement[$attrs.instance].currentColumn;
     });
 
 
     $scope.$watch(function() {
-        return $scope.widget.gridManagement[$attrs.instance].currentRow;
+        return $scope.self.gridManagement[$attrs.instance].currentRow;
     }, function() {
 
-        $scope.currentRow = $scope.widget.gridManagement[$attrs.instance].currentRow;
+        $scope.currentRow = $scope.self.gridManagement[$attrs.instance].currentRow;
     });
 
 

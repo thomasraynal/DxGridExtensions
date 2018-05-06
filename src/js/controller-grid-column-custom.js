@@ -25,12 +25,8 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
         $scope.customColumnName = '';
         $scope.customColumnSelectedAvailableColumn = null;
 
-        //refacto :dx angular control extension?
-        if (!dxGridExtensions.isUndefinedOrNull($("#customColumnAvailableColumnsFormat").dxSelectBox("instance")))
-            $("#customColumnAvailableColumnsFormat").dxSelectBox("instance").option("value", null);
-
-        if (!dxGridExtensions.isUndefinedOrNull($("#existingCustomColumns").dxSelectBox("instance")))
-            $("#existingCustomColumns").dxSelectBox("instance").option("value", null);
+        dxGridExtensions.resetSelectBoxValue("#customColumnAvailableColumnsFormat");
+        dxGridExtensions.resetSelectBoxValue("#existingCustomColumns");
 
         $scope.selectedExistingCustomColumn = '';
         $scope.selectedCustomColumnFormating = '';
@@ -86,7 +82,7 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
         onItemClick: function(e) {
             $scope.customColumnExpressionText += '[' + e.itemData + ']';
             $scope.customColumnSelectedAvailableColumn = null;
-            $("#customColumnAvailableColumns").dxSelectBox("instance").option("value", null)
+            dxGridExtensions.resetSelectBoxValue("#customColumnAvailableColumns");
         },
         placeholder: "Add column to expression",
     };

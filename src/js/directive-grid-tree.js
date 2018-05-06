@@ -6,21 +6,21 @@ dxGridExtension.directive('treeGrid', function($timeout, $controller, customColu
         link: {
             pre: function(scope, element, attrs) {
 
-                scope.widget = scope.$parent;
+                scope.self = scope.$parent;
 
                 //refacto: implement inheritance
-                if (!scope.widget.config) scope.widget.config = {};
-                scope.widget.config[attrs.instance] = {};
+                if (!scope.self.config) scope.self.config = {};
+                scope.self.config[attrs.instance] = {};
 
                 scope.treeListName = attrs.instance;
-                scope.treeListOptions = scope.widget[attrs.options];
+                scope.treeListOptions = scope.self[attrs.options];
                 scope.$control = element;
 
-                if (!scope.widget.gridManagement) scope.widget.gridManagement = {};
-                scope.widget.gridManagement[scope.treeListName] = {};
+                if (!scope.self.gridManagement) scope.self.gridManagement = {};
+                scope.self.gridManagement[scope.treeListName] = {};
 
-                scope.widget.currentColumn = null;
-                scope.widget.currentRow = null;
+                scope.self.currentColumn = null;
+                scope.self.currentRow = null;
 
                 var columns = dxGridExtensions.isUndefinedOrNull(getConfig('columns')) ? null : getConfig('columns');
 
@@ -110,8 +110,8 @@ dxGridExtension.directive('treeGrid', function($timeout, $controller, customColu
                     if (dxGridExtensions.isUndefinedOrNull(scope.$control)) return null;
                     try {
                         //if the grid has been rendered
-                        var grid = (scope.widget[scope.treeListName].NAME) ? scope.widget[scope.treeListName] : scope.$control.find('#treeGrid').dxTreeList("instance");
-                        if (scope.widget[scope.treeListName] !== grid) scope.widget[scope.treeListName] = grid;
+                        var grid = (scope.self[scope.treeListName].NAME) ? scope.self[scope.treeListName] : scope.$control.find('#treeGrid').dxTreeList("instance");
+                        if (scope.self[scope.treeListName] !== grid) scope.self[scope.treeListName] = grid;
                         return grid;
 
                     } catch (ex) {
@@ -120,13 +120,13 @@ dxGridExtension.directive('treeGrid', function($timeout, $controller, customColu
                 };
 
                 function setConfig(index, value) {
-                    if (dxGridExtensions.isUndefinedOrNull(scope.widget.config[scope.treeListName])) scope.widget.config[scope.treeListName] = {};
-                    scope.widget.config[scope.treeListName][index] = value;
+                    if (dxGridExtensions.isUndefinedOrNull(scope.self.config[scope.treeListName])) scope.self.config[scope.treeListName] = {};
+                    scope.self.config[scope.treeListName][index] = value;
                 };
 
                 function getConfig(index) {
-                    if (dxGridExtensions.isUndefinedOrNull(scope.widget.config[scope.treeListName])) scope.widget.config[scope.treeListName] = {};
-                    return scope.widget.config[scope.treeListName][index];
+                    if (dxGridExtensions.isUndefinedOrNull(scope.self.config[scope.treeListName])) scope.self.config[scope.treeListName] = {};
+                    return scope.self.config[scope.treeListName][index];
                 };
 
                 function initializeInternal() {
@@ -177,29 +177,29 @@ dxGridExtension.directive('treeGrid', function($timeout, $controller, customColu
 
                 function getGridMenuItems(element) {
 
-                    scope.widget.gridManagement[scope.treeListName].currentColumn = element.column;
-                    scope.widget.gridManagement[scope.treeListName].currentRow = element.row;
+                    scope.self.gridManagement[scope.treeListName].currentColumn = element.column;
+                    scope.self.gridManagement[scope.treeListName].currentRow = element.row;
 
                     return [{
                         text: 'Management - Columns',
                         onItemClick: function() {
-                            scope.widget.gridManagement[scope.treeListName].showColumnChooserConsole = true;
+                            scope.self.gridManagement[scope.treeListName].showColumnChooserConsole = true;
                         }
                     }, {
                         text: 'Management - Conditional Formatting',
                         onItemClick: function() {
-                            scope.widget.gridManagement[scope.treeListName].showConditionalFormattingConsole = true;
+                            scope.self.gridManagement[scope.treeListName].showConditionalFormattingConsole = true;
                         }
                     }, {
                         text: 'Management - Custom Columns',
                         onItemClick: function() {
-                            scope.widget.gridManagement[scope.treeListName].showCustomColumnConsole = true;
+                            scope.self.gridManagement[scope.treeListName].showCustomColumnConsole = true;
                         }
                     }, {
                         text: 'Current Column - Modify',
                         onItemClick: function() {
 
-                            scope.widget.gridManagement[scope.treeListName].showColumnManagementConsole = true;
+                            scope.self.gridManagement[scope.treeListName].showColumnManagementConsole = true;
                         }
                     }]
                 };

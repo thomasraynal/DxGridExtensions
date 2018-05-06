@@ -43,7 +43,7 @@ dxGridExtension.factory('conditionalFormattingConfiguration', function($log) {
             $log.error(e);
         }
     };
- 
+
     //refacto : otherway arround, list of rules to menu 
     var rules = [{
         "key": "Auto set",
@@ -104,10 +104,7 @@ dxGridExtension.factory('conditionalFormattingConfiguration', function($log) {
             text: "Text color",
             isExpressionBased: true,
             formatting: function(options, rule) {
-
                 $(options.cellElement[0]).css("color", rule.color);
-
-
             }
         }, {
             text: "Background Color",
@@ -198,9 +195,7 @@ dxGridExtension.factory('conditionalFormattingConfiguration', function($log) {
         getRuleFromdescriptor: getRuleFromdescriptor,
         createRule: createRule,
         applyConditionalFormattingExpressionOnCell: applyConditionalFormattingExpressionOnCell,
-        //refacto
         getAllRules: getAllRules,
-        allRules: rules,
         availableRules: rules,
         availableIcons: icons
     };
