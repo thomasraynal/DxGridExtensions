@@ -1,9 +1,11 @@
-dxGridExtension.controller('conditionalFormatting', function conditionalFormattingCrtl($scope, $controller, $timeout, conditionalFormattingConfiguration) {
+dxGridExtension.controller('conditionalFormatting', function conditionalFormattingCrtl($scope, management, config, $controller, $timeout, conditionalFormattingConfiguration) {
 
     const defaultColor = "#ff2600";
     const defaultIcon = conditionalFormattingConfiguration.availableIcons[0];
 
-    $scope.gridManagement.showConditionalFormattingConsole = false;
+    $scope.management   =management;
+
+    $scope.management.showConditionalFormattingConsole = false;
 
     $scope.conditionalFormatingGrid = null;
     $scope.conditionalFormattingResult = [];
@@ -19,7 +21,7 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
     $scope.currentConditionalFormattingColor = defaultColor;
     $scope.selectedConditionalFormattingIcon = defaultIcon;
 
-    $scope.config.conditionalFormattingRules = !dxGridExtensions.isUndefinedOrNull($scope.config.conditionalFormattingRules) ? _.transform($scope.config.conditionalFormattingRules, function(result, item) {
+    config.conditionalFormattingRules = !dxGridExtensions.isUndefinedOrNull(config.conditionalFormattingRules) ? _.transform(config.conditionalFormattingRules, function(result, item) {
         result.push(conditionalFormattingConfiguration.getRuleFromdescriptor(item))
     }, []) : [];
 
@@ -67,7 +69,7 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
         }
     });
 
-    $scope.$watch('gridManagement.showConditionalFormattingConsole', function() {
+    $scope.$watch('management.showConditionalFormattingConsole', function() {
 
         if (!dxGridExtensions.isUndefinedOrNull($scope.conditionalFormatingGrid)) {
             var conditionalFormattingGrid = $scope.conditionalFormatingGrid.dxDataGrid('instance');
@@ -136,7 +138,7 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
         dragEnabled: true,
         closeOnOutsideClick: true,
         bindingOptions: {
-            visible: "gridManagement.showConditionalFormattingConsole"
+            visible: "management.showConditionalFormattingConsole"
         }
     };
 
@@ -167,13 +169,13 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
                 $scope.selectedConditionalFormattingIcon
             );
 
-            _.remove($scope.config.conditionalFormattingRules, { target: rule.target });
+            _.remove(config.conditionalFormattingRules, { target: rule.target });
 
-            $scope.config.conditionalFormattingRules.push(rule)
+            config.conditionalFormattingRules.push(rule)
 
             $scope.gridInstance.repaint();
 
-            $scope.gridManagement.showConditionalFormattingConsole = false;
+            $scope.managementshowConditionalFormattingConsole = false;
 
         }
     };
@@ -254,11 +256,11 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
         },
         onClick: function() {
 
-            _.remove($scope.config.conditionalFormattingRules, { target: $scope.selectedExistingConditionalFormattingRule.target });
+            _.remove(config.conditionalFormattingRules, { target: $scope.selectedExistingConditionalFormattingRule.target });
 
             $scope.gridInstance.repaint();
 
-            $scope.gridManagement.showConditionalFormattingConsole = false;
+            $scope.managementshowConditionalFormattingConsole = false;
         }
     };
 

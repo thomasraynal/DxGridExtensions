@@ -1,6 +1,6 @@
 dxGridExtension.controller('columnManagement', function columnManagementCrtl($scope, $controller, $timeout, customColumnConfiguration) {
 
-    $scope.gridManagement.showColumnManagementConsole = false;
+    $scope.self.gridManagement.showColumnManagementConsole = false;
 
     $scope.columnManagementColumnName;
     $scope.columnManagementColumnFormating;
@@ -20,10 +20,10 @@ dxGridExtension.controller('columnManagement', function columnManagementCrtl($sc
     };
 
     $scope.$watch(function() {
-        return $scope.gridManagement.showColumnManagementConsole;
+        return $scope.self.gridManagement.showColumnManagementConsole;
     }, function() {
 
-        if (dxGridExtensions.isUndefinedOrNull($scope.currentColumn) || !$scope.gridManagement.showColumnManagementConsole) return;
+        if (dxGridExtensions.isUndefinedOrNull($scope.currentColumn) || !$scope.self.gridManagement.showColumnManagementConsole) return;
 
         $scope.columnManagementColumnName = $scope.currentColumn.caption;
 
@@ -105,12 +105,11 @@ dxGridExtension.controller('columnManagement', function columnManagementCrtl($sc
                     }
 
                     //bindings do not work...
-                    $scope.gridInstance.option($scope.currentColumn.dataField, 'summary.groupItems', $scope.config.groupItems);
+                    $scope.gridInstance.option($scope.currentColumn.dataField, 'summary.groupItems', $scope.self.config.groupItems);
 
                 });
 
-                $scope.gridManagement.showColumnManagementConsole = false;
-
+                $scope.self.gridManagement.showColumnManagementConsole = false;
 
         }
     };

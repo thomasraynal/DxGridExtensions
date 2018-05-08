@@ -19,9 +19,6 @@ dxGridExtension.directive('treeGrid', function($timeout, $controller, customColu
                 if (!scope.self.gridManagement) scope.self.gridManagement = {};
                 scope.self.gridManagement[scope.treeListName] = {};
 
-                scope.self.currentColumn = null;
-                scope.self.currentRow = null;
-
                 var columns = dxGridExtensions.isUndefinedOrNull(getConfig('columns')) ? null : getConfig('columns');
 
                 setConfig('columns', columns);
@@ -99,7 +96,6 @@ dxGridExtension.directive('treeGrid', function($timeout, $controller, customColu
 
 
                     setConfig('columns', columns);
-
                 });
 
                 function getDataSource() {

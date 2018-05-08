@@ -1,1 +1,101 @@
 <div id="flatGrid" dx-data-grid="flatGridOptions"></div>
+<div class="popup" id="conditionalFormattingConsole" dx-popup="conditionalFormattingPopupOptions">
+    <div data-options="dxTemplate: { name:'info' }">
+        <div style="margin:5px;min-height:30px">
+            <div class="dx-fieldset">
+                <div class="dx-fieldset-header">Select an existing rule..</div>
+                <div class="dx-field">
+                    <div class="field-container">
+                        <div style="float:left;width:50%;" id="existingConditionalFormattingRules" dx-select-box="existingConditionalFormattingRulesSelectBoxOptions"></div>
+                        <div style="float:right;width:20%;" dx-button="deleteExistingRuleButtonOptions"></div>
+                        <div style="float:right;width:20%;" dx-button="loadExistingRuleButtonOptions"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="dx-fieldset">
+                <div class="dx-fieldset-header">...or create a new one</div>
+                <div class="dx-field">
+                    <div class="field-container">
+                        <div style="float:left;width:49%;margin-right:5px;" id="conditionFormatingTargetColumn" dx-select-box="conditionalFormatingAvailableTargetColumnsOptions"></div>
+                        <div style="float:right;width:50%;" dx-select-box="consitionalFormattingAvailableColumnsSelectBoxOptions"></div>
+                    </div>
+                    <div style="float:left;width:100%;margin-top:5px;" dx-text-box="conditionalFormatingExpressionTextBoxOptions"></div>
+                </div>
+            </div>
+            <div class="field-container">
+                <div style="margin:5px;float:left;width:65%;">
+                    <div style="top:50px;margin:5px;width:100%;" id="ruleTestingGrid" dx-data-grid="conditionalFormattingResultGridPopupOptions"></div>
+                </div>
+                <div style="margin:5px;float:right;width:30%;">
+                    <div id="conditionalFormattingRuleList" dx-list="rulesListOptions"></div>
+                    <div style="margin-top:10px;" dx-color-box="conditionalFormattingColorBox"></div>
+                    <div style="margin-top:10px;" dx-select-box="availableIconsSelectBoxOptions"></div>
+                </div>
+            </div>
+            <div class="field-container">
+                <div style="float:left;width:48%;margin-bottom:20px;" dx-button="conditionalFormattingTestExpressionButtonOptions"></div>
+                <div style="float:right;width:48%;margin-bottom:20px;" dx-button="createConditionalFormattingButtonOptions"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="popup" id="customColumnConsole" dx-popup="customColumnPopupOptions">
+    <div data-options="dxTemplate: { name:'info' }">
+        <div class="dx-fieldset">
+            <div class="dx-fieldset-header">Select an existing custom column...</div>
+            <div class="dx-field">
+                <div style="width:100%;min-height:30px;">
+                    <div style="float:left;width:40%;" id="existingCustomColumns" dx-select-box="existingCustomColumnsSelectBoxOptions"></div>
+                    <div style="float:right;width:28%;margin:0px;" dx-button="deleteExistingCustomColumnButtonOptions"></div>
+                    <div style="float:right;width:27%;margin:0px 5px 0px 0px;" dx-button="loadExistingCustomColumnButtonOptions"></div>
+                </div>
+            </div>
+        </div>
+        <div class="dx-fieldset">
+            <div class="dx-fieldset-header">...or create a new one</div>
+            <div class="dx-field">
+                <div style="width:100%;min-height:30px;">
+                    <div style="float:left;width:25%;margin-right:5px;" id="customColumnColumnName" dx-text-box="customColumnNameTextBoxOptions"></div>
+                    <div style="float:left;width:35%;" id="customColumnAvailableColumnsFormat" dx-select-box="customColumnAvailableFormattingSelectBoxOptions"></div>
+                    <div style="float:right;width:35%;" id="customColumnAvailableColumns" dx-select-box="customColumnAvailableColumnsSelectBoxOptions"></div>
+                </div>
+                <div style="width:100%;" dx-text-box="customColumnExpressionTextBoxOptions"></div>
+                <div style="width:100%;margin-top:5px;min-height:30px;">
+                    <div style="float:left;width:50%;margin:0px 5px 0px 0px;" dx-button="customColumnTestExpressionButtonOptions"></div>
+                    <div style="float:right;width:49%;margin:0px" dx-button="createRuleButtonOptions"></div>
+                </div>
+            </div>
+        </div>
+        <div style="margin-top:10px;">
+            <div style="bottom:0;margin:5px;width:100%;" id="customColumnTestingGrid" dx-data-grid="customColumnResultGridOptions"></div>
+        </div>
+    </div>
+</div>
+<div class="popup" id="columnManagementPopup" dx-popup="columnManagementPopupOptions">
+    <div data-options="dxTemplate: { name:'info' }">
+        <div class="dx-fieldset">
+            <div class="dx-field">
+                <div class="dx-field-label">Name</div>
+                <div class="dx-field-value">
+                    <div dx-text-box="columnManagementColumnNameTextBoxOptions"></div>
+                </div>
+            </div>
+            <div class="dx-field">
+                <div class="dx-field-label">Format</div>
+                <div class="dx-field-value">
+                    <div id="columnManagementAvailableColumnsFormat" dx-select-box="columnManagementAvailableFormattingSelectBoxOptions"></div>
+                </div>
+            </div>
+        </div>
+        <div style="width:100%;margin-top:5px;min-height:30px;">
+            <div style="width:100%;margin:0px" dx-button="columnManagementValidateButtonOptions"></div>
+        </div>
+    </div>
+</div>
+<div class="popup" id="columnChooserConsole" dx-popup="columnChooserPopupOptions">
+    <div data-options="dxTemplate: { name:'info' }">
+        <div id="columnChooserGrid" style="margin:10px" dx-data-grid="columnChooserGridOptions"></div>
+        <div style="width:100%;margin-top:10px;min-height:30px;" dx-button="columnChooserValidateButtonOptions"></div>
+    </div>
+</div>
+

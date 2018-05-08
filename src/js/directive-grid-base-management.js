@@ -9,8 +9,8 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
         $scope.self.config[$attrs.instance] = {};
     }
 
-    $scope.gridManagement = $scope.self.gridManagement[$attrs.instance];
-    $scope.config = $scope.self.config[$attrs.instance];
+    $scope.self.gridManagement[$attrs.instance];
+    $scope.self.config[$attrs.instance];
 
     $scope.updateGrid = (action) => {
 
@@ -21,9 +21,9 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
 
     function updateAvailableColumns() {
 
-        if (dxGridExtensions.isUndefinedOrNull($scope.config.columns)) return;
+        if (dxGridExtensions.isUndefinedOrNull($scope.self.config.columns)) return;
         $scope.dataSource = $scope.self[$attrs.datasource];
-        $scope.availableColumns = _.sortBy(_.transform($scope.config.columns.concat(null === $scope.config.customColumns ? [] : $scope.config.customColumns), function(result, item) { result.push(item.dataField) }, []), function(e) {
+        $scope.availableColumns = _.sortBy(_.transform($scope.self.config.columns.concat(null === $scope.self.config.customColumns ? [] : $scope.self.config.customColumns), function(result, item) { result.push(item.dataField) }, []), function(e) {
             return e
         });
     };
@@ -35,21 +35,20 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
         $scope.dataSource = $scope.self[$attrs.datasource];
         updateAvailableColumns()
 
-        $scope.availableColumns = _.sortBy(_.transform($scope.config.columns, function(result, item) { result.push(item.dataField) }, []), function(e) {
+        $scope.availableColumns = _.sortBy(_.transform($scope.self.config.columns, function(result, item) { result.push(item.dataField) }, []), function(e) {
             return e
         });
     });
 
     $scope.$watch(function() {
-        return $scope.config.customColumns;
+        return $scope.self.config.customColumns;
     }, function() {
 
         updateAvailableColumns()
     });
 
-
     $scope.$watch(function() {
-        return $scope.config.customColumns.length;
+        return $scope.self.config.customColumns.length;
     }, function() {
 
         updateAvailableColumns()
@@ -78,7 +77,7 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
     });
 
 
-    var args = { $scope: $scope };
+    var args = { $scope: $scope, management: $scope.self.gridManagement[$attrs.instance], config: $scope.self.config[$attrs.instance] };
 
     $controller('columnManagement', args);
     $controller('conditionalFormatting', args);

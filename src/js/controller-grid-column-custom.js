@@ -1,6 +1,6 @@
 dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $controller, $timeout, $log, customColumnConfiguration) {
 
-    $scope.gridManagement.showCustomColumnConsole = false;
+    $scope.self.gridManagement.showCustomColumnConsole = false;
 
     $scope.customColumnGrid = null;
     $scope.customColumnExpressionText = '';
@@ -13,13 +13,13 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
     $scope.selectedExistingCustomColumn = null;
     $scope.isExistingCustomColumnActionDisabled = false;
 
-    if (dxGridExtensions.isUndefinedOrNull($scope.config.customColumns)) $scope.config.customColumns = [];
+    if (dxGridExtensions.isUndefinedOrNull($scope.self.config.customColumns)) $scope.self.config.customColumns = [];
 
     $scope.$watch(function() {
-        return $scope.gridManagement.showCustomColumnConsole;
+        return $scope.self.gridManagement.showCustomColumnConsole;
     }, function() {
 
-        if (!$scope.gridManagement.showCustomColumnConsole) return;
+        if (!$scope.self.gridManagement.showCustomColumnConsole) return;
         if (!dxGridExtensions.isUndefinedOrNull($scope.customColumnGrid)) $scope.customColumnGrid.dxDataGrid('instance').option('dataSource', null);
         $scope.customColumnExpressionText = '';
         $scope.customColumnName = '';
@@ -155,13 +155,13 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
                     $scope.selectedCustomColumnFormating
                 );
 
-                var doesColumnExist = _.remove($scope.config.customColumns, { name: rule.name }).length > 0;
+                var doesColumnExist = _.remove($scope.self.config.customColumns, { name: rule.name }).length > 0;
 
                 if (doesColumnExist) {
                     removeCustomColumn(rule.name);
                 }
 
-                $scope.config.customColumns.push(rule)
+                $scope.self.config.customColumns.push(rule)
 
                 customColumnConfiguration.computeCustomColumn(rule, $scope.dataSource);
 
@@ -173,11 +173,11 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
                     visibleIndex: $scope.currentColumn.visibleIndex
                 };
 
-                $scope.config.columns.push(column);
+                $scope.self.config.columns.push(column);
 
-                if ($scope.selectedCustomColumnFormating.dataType === 'number' && $scope.config.groupItems) {
+                if ($scope.selectedCustomColumnFormating.dataType === 'number' && $scope.self.config.groupItems) {
 
-                    $scope.config.groupItems.push({
+                    $scope.self.config.groupItems.push({
                         column: column.dataField,
                         summaryType: "sum",
                         showInGroupFooter: false,
@@ -196,7 +196,7 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
             var state = ($scope.gridInstance.state) ? $scope.gridInstance.state() : undefined;
             if (state) $scope.gridInstance.state(state);
 
-            $scope.gridManagement.showCustomColumnConsole = false;
+            $scope.self.gridManagement.showCustomColumnConsole = false;
         }
     };
 
@@ -207,7 +207,7 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
         },
         onClick: function() {
             removeCustomColumn($scope.selectedExistingCustomColumn.name);
-            $scope.gridManagement.showCustomColumnConsole = false;
+            $scope.self.gridManagement.showCustomColumnConsole = false;
         }
     };
 
@@ -234,14 +234,14 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
 
     function removeCustomColumn(name) {
 
-        _.remove($scope.config.customColumns, { name: name });
+        _.remove($scope.self.config.customColumns, { name: name });
 
         _.each($scope.dataSource, function(item) {
             delete item[name];
         });
 
-        _.remove($scope.config.columns, { dataField: name });
-        _.remove($scope.config.groupItems, { column: name });
+        _.remove($scope.self.config.columns, { dataField: name });
+        _.remove($scope.self.config.groupItems, { column: name });
 
         $scope.gridInstance.repaint();
     };
@@ -254,8 +254,8 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
 
         try {
 
-            if (_.some($scope.config.columns, (column) => column.caption === $scope.customColumnName)) throw new Error("Column " + $scope.customColumnName + " already exist");
-            if (_.some($scope.config.customColumns, (column) => column.caption === $scope.customColumnName)) throw new Error("Column " + $scope.customColumnName + " already exist");
+            if (_.some($scope.self.config.columns, (column) => column.caption === $scope.customColumnName)) throw new Error("Column " + $scope.customColumnName + " already exist");
+            if (_.some($scope.self.config.customColumns, (column) => column.caption === $scope.customColumnName)) throw new Error("Column " + $scope.customColumnName + " already exist");
 
 
             var expression = $scope.customColumnExpressionText;

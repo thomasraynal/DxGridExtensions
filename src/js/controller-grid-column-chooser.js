@@ -1,13 +1,13 @@
 dxGridExtension.controller('columnChooser', function columnChooserCrtl($scope, $controller, $timeout, customColumnConfiguration) {
 
     $scope.columnChooserGrid;
-    $scope.gridManagement.showColumnChooserConsole = false;
+    $scope.self.gridManagement.showColumnChooserConsole = false;
     $scope.getAllColumns = getAllColumns;
     $scope.getColumnFormat = getColumnFormat;
 
-    $scope.$watch(() => $scope.gridManagement.showColumnChooserConsole, function() {
+    $scope.$watch(() => $scope.self.gridManagement.showColumnChooserConsole, function() {
 
-        if (!$scope.gridManagement.showColumnChooserConsole) return;
+        if (!$scope.self.gridManagement.showColumnChooserConsole) return;
 
         $timeout(() => {
 
@@ -135,7 +135,7 @@ dxGridExtension.controller('columnChooser', function columnChooserCrtl($scope, $
                     $scope.updateGrid(() => {
                         _.forEach($scope.columnChooserDataSource._array, function(item) {
 
-                            var column = _.find($scope.config.columns, function(col) {
+                            var column = _.find($scope.self.config.columns, function(col) {
                                 return item.dataField === col.dataField;
                             });
 
@@ -159,12 +159,12 @@ dxGridExtension.controller('columnChooser', function columnChooserCrtl($scope, $
 
                         $timeout(() => {
 
-                            $scope.gridInstance.option('columns', $scope.config.columns);
-                            $scope.gridInstance.option('summary.groupItems', $scope.config.groupItems);
+                            $scope.gridInstance.option('columns', $scope.self.config.columns);
+                            $scope.gridInstance.option('summary.groupItems', $scope.self.config.groupItems);
 
                         }, 500);
                     });
-                    $scope.gridManagement.showColumnChooserConsole = false;
+                    $scope.self.gridManagement.showColumnChooserConsole = false;
                 });
 
         }
@@ -288,7 +288,7 @@ dxGridExtension.controller('columnChooser', function columnChooserCrtl($scope, $
             column.format.precision = format.value.format.precision;
         }
 
-        var groupItem = _.find($scope.config.groupItems, function(item) {
+        var groupItem = _.find($scope.self.config.groupItems, function(item) {
             return item.column === column.dataField;
         });
 
@@ -307,7 +307,7 @@ dxGridExtension.controller('columnChooser', function columnChooserCrtl($scope, $
 
     function removeAggregation(dataField) {
 
-        _.remove($scope.config.groupItems, function(item) {
+        _.remove($scope.self.config.groupItems, function(item) {
             return item.column === dataField;
         });
     };
@@ -316,14 +316,14 @@ dxGridExtension.controller('columnChooser', function columnChooserCrtl($scope, $
 
         if (null == $scope.currentColumn || $scope.currentColumn.dataType == "string") return;
 
-        var result = _.find($scope.config.groupItems, function(item) {
+        var result = _.find($scope.self.config.groupItems, function(item) {
             return item.column === dataField;
         });
 
         if (!dxGridExtensions.isUndefinedOrNull(result)) return;
 
         var group = createDefaultNumberGroupItem(dataField);
-        $scope.config.groupItems.push(group);
+        $scope.self.config.groupItems.push(group);
     };
 
     function createColumnChooserColumnData(column, id) {
@@ -335,7 +335,7 @@ dxGridExtension.controller('columnChooser', function columnChooserCrtl($scope, $
             dataField: column.dataField,
             caption: column.caption + '',
             visible: column.visible,
-            hasAggregation: !dxGridExtensions.isUndefinedOrNull(_.find($scope.config.groupItems, function(group) {
+            hasAggregation: !dxGridExtensions.isUndefinedOrNull(_.find($scope.self.config.groupItems, function(group) {
                 return group.column == column.dataField;
             })),
             position: column.visibleIndex,
