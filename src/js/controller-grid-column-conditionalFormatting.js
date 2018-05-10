@@ -1,9 +1,8 @@
-dxGridExtension.controller('conditionalFormatting', function conditionalFormattingCrtl($scope, management, config, $controller, $timeout, conditionalFormattingConfiguration) {
+dxGridExtension.controller('conditionalFormatting', function conditionalFormattingCrtl($scope, $controller, $timeout, conditionalFormattingConfiguration) {
 
     const defaultColor = "#ff2600";
     const defaultIcon = conditionalFormattingConfiguration.availableIcons[0];
 
-    $scope.management   =management;
 
     $scope.management.showConditionalFormattingConsole = false;
 
@@ -21,7 +20,7 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
     $scope.currentConditionalFormattingColor = defaultColor;
     $scope.selectedConditionalFormattingIcon = defaultIcon;
 
-    config.conditionalFormattingRules = !dxGridExtensions.isUndefinedOrNull(config.conditionalFormattingRules) ? _.transform(config.conditionalFormattingRules, function(result, item) {
+    $scope.management.conditionalFormattingRules = !dxGridExtensions.isUndefinedOrNull($scope.management.conditionalFormattingRules) ? _.transform($scope.management.conditionalFormattingRules, function(result, item) {
         result.push(conditionalFormattingConfiguration.getRuleFromdescriptor(item))
     }, []) : [];
 
@@ -83,7 +82,6 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
         $scope.conditionalFormatingTargetColumn = null;
 
         dxGridExtensions.resetSelectBoxValue("#conditionFormatingTargetColumn");
-
     });
 
     $scope.$watch('conditionalFormatingTargetColumn', function() {
@@ -159,7 +157,7 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
         },
         onClick: function(e) {
 
-            if (dxGridExtensions.isUndefinedOrNull($scope.gridInstance)) return;
+            if (dxGridExtensions.isUndefinedOrNull($scope.management.instance)) return;
 
             var rule = conditionalFormattingConfiguration.createRule(
                 $scope.selectedConditionalFormattingRule.text,
@@ -169,13 +167,13 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
                 $scope.selectedConditionalFormattingIcon
             );
 
-            _.remove(config.conditionalFormattingRules, { target: rule.target });
+            _.remove($scope.management.conditionalFormattingRules, { target: rule.target });
 
-            config.conditionalFormattingRules.push(rule)
+            $scope.management.conditionalFormattingRules.push(rule)
 
-            $scope.gridInstance.repaint();
+            $scope.management.instance.repaint();
 
-            $scope.managementshowConditionalFormattingConsole = false;
+            $scope.management.showConditionalFormattingConsole = false;
 
         }
     };
@@ -256,11 +254,11 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
         },
         onClick: function() {
 
-            _.remove(config.conditionalFormattingRules, { target: $scope.selectedExistingConditionalFormattingRule.target });
+            _.remove($scope.management.conditionalFormattingRules, { target: $scope.selectedExistingConditionalFormattingRule.target });
 
-            $scope.gridInstance.repaint();
+            $scope.management.instance.repaint();
 
-            $scope.managementshowConditionalFormattingConsole = false;
+            $scope.management.showConditionalFormattingConsole = false;
         }
     };
 
@@ -288,12 +286,11 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
     $scope.existingConditionalFormattingRulesSelectBoxOptions = {
         displayExpr: "target",
         bindingOptions: {
-            dataSource: 'config.conditionalFormattingRules',
+            dataSource: '$scope.management.conditionalFormattingRules',
             value: 'selectedExistingConditionalFormattingRule'
         },
         placeholder: 'Load existing rule...'
     };
-
 
     function applyConditionalFormattingExpression() {
 
@@ -369,6 +366,5 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
 
         $scope.isCreateRuleDisabled = false;
     };
-
 
 });

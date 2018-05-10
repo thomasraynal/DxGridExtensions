@@ -135,7 +135,7 @@ dxGridExtension.controller('columnChooser', function columnChooserCrtl($scope, $
                     $scope.updateGrid(() => {
                         _.forEach($scope.columnChooserDataSource._array, function(item) {
 
-                            var column = _.find($scope.self.config.columns, function(col) {
+                            var column = _.find($scope.self.gridManagement.columns, function(col) {
                                 return item.dataField === col.dataField;
                             });
 
@@ -159,8 +159,8 @@ dxGridExtension.controller('columnChooser', function columnChooserCrtl($scope, $
 
                         $timeout(() => {
 
-                            $scope.gridInstance.option('columns', $scope.self.config.columns);
-                            $scope.gridInstance.option('summary.groupItems', $scope.self.config.groupItems);
+                            $scope.gridInstance.option('columns', $scope.self.gridManagement.columns);
+                            $scope.gridInstance.option('summary.groupItems', $scope.self.gridManagement.groupItems);
 
                         }, 500);
                     });
@@ -288,7 +288,7 @@ dxGridExtension.controller('columnChooser', function columnChooserCrtl($scope, $
             column.format.precision = format.value.format.precision;
         }
 
-        var groupItem = _.find($scope.self.config.groupItems, function(item) {
+        var groupItem = _.find($scope.self.gridManagement.groupItems, function(item) {
             return item.column === column.dataField;
         });
 
@@ -307,23 +307,23 @@ dxGridExtension.controller('columnChooser', function columnChooserCrtl($scope, $
 
     function removeAggregation(dataField) {
 
-        _.remove($scope.self.config.groupItems, function(item) {
+        _.remove($scope.self.gridManagement.groupItems, function(item) {
             return item.column === dataField;
         });
     };
 
     function createAggregation(dataField) {
 
-        if (null == $scope.currentColumn || $scope.currentColumn.dataType == "string") return;
+        if (null == $scope.management.currentColumn || $scope.management.currentColumn.dataType == "string") return;
 
-        var result = _.find($scope.self.config.groupItems, function(item) {
+        var result = _.find($scope.self.gridManagement.groupItems, function(item) {
             return item.column === dataField;
         });
 
         if (!dxGridExtensions.isUndefinedOrNull(result)) return;
 
         var group = createDefaultNumberGroupItem(dataField);
-        $scope.self.config.groupItems.push(group);
+        $scope.self.gridManagement.groupItems.push(group);
     };
 
     function createColumnChooserColumnData(column, id) {
@@ -335,7 +335,7 @@ dxGridExtension.controller('columnChooser', function columnChooserCrtl($scope, $
             dataField: column.dataField,
             caption: column.caption + '',
             visible: column.visible,
-            hasAggregation: !dxGridExtensions.isUndefinedOrNull(_.find($scope.self.config.groupItems, function(group) {
+            hasAggregation: !dxGridExtensions.isUndefinedOrNull(_.find($scope.self.gridManagement.groupItems, function(group) {
                 return group.column == column.dataField;
             })),
             position: column.visibleIndex,

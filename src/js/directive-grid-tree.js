@@ -9,8 +9,8 @@ dxGridExtension.directive('treeGrid', function($timeout, $controller, customColu
                 scope.self = scope.$parent;
 
                 //refacto: implement inheritance
-                if (!scope.self.config) scope.self.config = {};
-                scope.self.config[attrs.instance] = {};
+                if (!scope.self.gridManagement) scope.self.gridManagement = {};
+                scope.self.gridManagement[attrs.instance] = {};
 
                 scope.treeListName = attrs.instance;
                 scope.treeListOptions = scope.self[attrs.options];
@@ -116,13 +116,13 @@ dxGridExtension.directive('treeGrid', function($timeout, $controller, customColu
                 };
 
                 function setConfig(index, value) {
-                    if (dxGridExtensions.isUndefinedOrNull(scope.self.config[scope.treeListName])) scope.self.config[scope.treeListName] = {};
-                    scope.self.config[scope.treeListName][index] = value;
+                    if (dxGridExtensions.isUndefinedOrNull(scope.self.gridManagement[scope.treeListName])) scope.self.gridManagement[scope.treeListName] = {};
+                    scope.self.gridManagement[scope.treeListName][index] = value;
                 };
 
                 function getConfig(index) {
-                    if (dxGridExtensions.isUndefinedOrNull(scope.self.config[scope.treeListName])) scope.self.config[scope.treeListName] = {};
-                    return scope.self.config[scope.treeListName][index];
+                    if (dxGridExtensions.isUndefinedOrNull(scope.self.gridManagement[scope.treeListName])) scope.self.gridManagement[scope.treeListName] = {};
+                    return scope.self.gridManagement[scope.treeListName][index];
                 };
 
                 function initializeInternal() {

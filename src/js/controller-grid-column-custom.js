@@ -13,7 +13,7 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
     $scope.selectedExistingCustomColumn = null;
     $scope.isExistingCustomColumnActionDisabled = false;
 
-    if (dxGridExtensions.isUndefinedOrNull($scope.self.config.customColumns)) $scope.self.config.customColumns = [];
+    if (dxGridExtensions.isUndefinedOrNull($scope.self.gridManagement.customColumns)) $scope.self.gridManagement.customColumns = [];
 
     $scope.$watch(function() {
         return $scope.self.gridManagement.showCustomColumnConsole;
@@ -155,13 +155,13 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
                     $scope.selectedCustomColumnFormating
                 );
 
-                var doesColumnExist = _.remove($scope.self.config.customColumns, { name: rule.name }).length > 0;
+                var doesColumnExist = _.remove($scope.self.gridManagement.customColumns, { name: rule.name }).length > 0;
 
                 if (doesColumnExist) {
                     removeCustomColumn(rule.name);
                 }
 
-                $scope.self.config.customColumns.push(rule)
+                $scope.self.gridManagement.customColumns.push(rule)
 
                 customColumnConfiguration.computeCustomColumn(rule, $scope.dataSource);
 
@@ -170,14 +170,14 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
                     caption: $scope.customColumnName,
                     dataType: $scope.selectedCustomColumnFormating.dataType,
                     format: { type: $scope.selectedCustomColumnFormating.format.type, precision: $scope.selectedCustomColumnFormating.format.precision },
-                    visibleIndex: $scope.currentColumn.visibleIndex
+                    visibleIndex: $scope.management.currentColumn.visibleIndex
                 };
 
-                $scope.self.config.columns.push(column);
+                $scope.self.gridManagement.columns.push(column);
 
-                if ($scope.selectedCustomColumnFormating.dataType === 'number' && $scope.self.config.groupItems) {
+                if ($scope.selectedCustomColumnFormating.dataType === 'number' && $scope.self.gridManagement.groupItems) {
 
-                    $scope.self.config.groupItems.push({
+                    $scope.self.gridManagement.groupItems.push({
                         column: column.dataField,
                         summaryType: "sum",
                         showInGroupFooter: false,
@@ -234,14 +234,14 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
 
     function removeCustomColumn(name) {
 
-        _.remove($scope.self.config.customColumns, { name: name });
+        _.remove($scope.self.gridManagement.customColumns, { name: name });
 
         _.each($scope.dataSource, function(item) {
             delete item[name];
         });
 
-        _.remove($scope.self.config.columns, { dataField: name });
-        _.remove($scope.self.config.groupItems, { column: name });
+        _.remove($scope.self.gridManagement.columns, { dataField: name });
+        _.remove($scope.self.gridManagement.groupItems, { column: name });
 
         $scope.gridInstance.repaint();
     };
@@ -254,8 +254,8 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
 
         try {
 
-            if (_.some($scope.self.config.columns, (column) => column.caption === $scope.customColumnName)) throw new Error("Column " + $scope.customColumnName + " already exist");
-            if (_.some($scope.self.config.customColumns, (column) => column.caption === $scope.customColumnName)) throw new Error("Column " + $scope.customColumnName + " already exist");
+            if (_.some($scope.self.gridManagement.columns, (column) => column.caption === $scope.customColumnName)) throw new Error("Column " + $scope.customColumnName + " already exist");
+            if (_.some($scope.self.gridManagement.customColumns, (column) => column.caption === $scope.customColumnName)) throw new Error("Column " + $scope.customColumnName + " already exist");
 
 
             var expression = $scope.customColumnExpressionText;
