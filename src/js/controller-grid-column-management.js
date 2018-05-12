@@ -73,42 +73,40 @@ dxGridExtension.controller('columnManagement', function columnManagementCrtl($sc
             disabled: 'cannotValidateChange'
         },
         onClick: function() {
-
-            $scope.updateGrid(() => {
-
-                    $scope.management.instance.columnOption($scope.management.currentColumn.dataField, 'caption', $scope.columnManagementColumnName);
-                    $scope.management.instance.columnOption($scope.management.currentColumn.dataField, 'dataType', $scope.columnManagementColumnFormating.value.dataType);
-                    $scope.management.instance.columnOption($scope.management.currentColumn.dataField, 'format', { type: null, precision: null });
-
-                    if (!dxGridExtensions.isUndefinedOrNull($scope.columnManagementColumnFormating.value.format)) {
-                        $scope.management.instance.columnOption($scope.management.currentColumn.dataField, 'format.type', $scope.columnManagementColumnFormating.value.format.type);
-                        $scope.management.instance.columnOption($scope.management.currentColumn.dataField, 'format.precision', $scope.columnManagementColumnFormating.value.format.precision);
-                    }
-
-                    var groupItem = _.find($scope.groupItems, function(item) {
-                        return item.column === $scope.management.currentColumn.dataField;
-                    });
-
-                    if (!dxGridExtensions.isUndefinedOrNull(groupItem)) {
-
-                        if (dxGridExtensions.isUndefinedOrNull($scope.columnManagementColumnFormating.value.format)) {
-                            groupItem.valueFormat.type = null;
-                            groupItem.valueFormat.precision = null;
-                        } else {
-                            groupItem.valueFormat.type = $scope.columnManagementColumnFormating.value.format.type;
-                            groupItem.valueFormat.precision = $scope.columnManagementColumnFormating.value.format.precision;
-                        }
-
-                    }
-
-                    //bindings do not work...
-                    $scope.management.instance.option($scope.management.currentColumn.dataField, 'summary.groupItems', $scope.management.groupItems);
-
-                });
-
-                $scope.management.showColumnManagementConsole = false;
-
+            $scope.columnManagementValidate();
         }
+    };
+
+    $scope.columnManagementValidate = function() {
+
+        $scope.updateGrid(() => {
+
+            $scope.management.instance.columnOption($scope.management.currentColumn.dataField, 'caption', $scope.columnManagementColumnName);
+            $scope.management.instance.columnOption($scope.management.currentColumn.dataField, 'dataType', $scope.columnManagementColumnFormating.value.dataType);
+            $scope.management.instance.columnOption($scope.management.currentColumn.dataField, 'format', { type: null, precision: null });
+
+            if (!dxGridExtensions.isUndefinedOrNull($scope.columnManagementColumnFormating.value.format)) {
+                $scope.management.instance.columnOption($scope.management.currentColumn.dataField, 'format.type', $scope.columnManagementColumnFormating.value.format.type);
+                $scope.management.instance.columnOption($scope.management.currentColumn.dataField, 'format.precision', $scope.columnManagementColumnFormating.value.format.precision);
+            }
+
+            var groupItem = _.find($scope.management.groupItems, function(item) {
+                return item.column === $scope.management.currentColumn.dataField;
+            });
+
+            if (!dxGridExtensions.isUndefinedOrNull(groupItem)) {
+
+                if (dxGridExtensions.isUndefinedOrNull($scope.columnManagementColumnFormating.value.format)) {
+                    groupItem.valueFormat.type = null;
+                    groupItem.valueFormat.precision = null;
+                } else {
+                    groupItem.valueFormat.type = $scope.columnManagementColumnFormating.value.format.type;
+                    groupItem.valueFormat.precision = $scope.columnManagementColumnFormating.value.format.precision;
+                }
+            }
+        });
+
+        $scope.management.showColumnManagementConsole = false;
     };
 
 });

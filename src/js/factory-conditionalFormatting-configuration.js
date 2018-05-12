@@ -190,7 +190,6 @@ dxGridExtension.factory('conditionalFormattingConfiguration', function($log) {
 
     };
 
-
     return {
         getRuleFromdescriptor: getRuleFromdescriptor,
         createRule: createRule,

@@ -15,16 +15,19 @@ module.exports = function(config) {
 
         // list of files / patterns to load in the browser
         files: [
-            './demo/js/data.js',
-            './demo/vendor/angular.min.js',
-            './dx.all.js',
-            './formula.js',
-            './jquery-ui.min.js',
-            './lodash.min.js',
-            './src/js/module.js',
-            './src/js/*.js',
+            './tests/demo/data.js',
+            './dependencies/jquery-3.1.1.min.js',
+            './dependencies/jquery-ui.min.js',
+            './dependencies/jquery.event.drag-2.3.0.js',
+            './dependencies/angular.min.js',
+            './dependencies/angular-route.min.js',
+            './dependencies/dx.all.js',
+            './dependencies/jstat.min.js',
+            './dependencies/formula.js',
+            './dependencies/lodash.min.js',
+            './dist/dx-grid-extensions.min.js',
             './node_modules/angular-mocks/angular-mocks.js',
-            './tests/*.js'
+            './tests/tests.js'
         ],
 
         // list of files / patterns to exclude

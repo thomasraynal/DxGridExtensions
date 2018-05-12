@@ -5,9 +5,9 @@
                 <div class="dx-fieldset-header">Select an existing rule..</div>
                 <div class="dx-field">
                     <div class="field-container">
-                        <div style="float:left;width:50%;" id="existingConditionalFormattingRules" dx-select-box="existingConditionalFormattingRulesSelectBoxOptions"></div>
-                        <div style="float:right;width:20%;" dx-button="deleteExistingRuleButtonOptions"></div>
-                        <div style="float:right;width:20%;" dx-button="loadExistingRuleButtonOptions"></div>
+                        <div style="float:left;width:50%;" id="existingConditionalFormattingRules" dx-select-box="conditionalFormattingExistingRulesSelectBoxOptions"></div>
+                        <div style="float:right;width:20%;" dx-button="conditionalFormattingDeleteExistingRuleButtonOptions"></div>
+                        <div style="float:right;width:20%;" dx-button="conditionalFormattingLoadExistingRuleButtonOptions"></div>
                     </div>
                 </div>
             </div>
@@ -15,10 +15,10 @@
                 <div class="dx-fieldset-header">...or create a new one</div>
                 <div class="dx-field">
                     <div class="field-container">
-                        <div style="float:left;width:49%;margin-right:5px;" id="conditionFormatingTargetColumn" dx-select-box="conditionalFormatingAvailableTargetColumnsOptions"></div>
-                        <div style="float:right;width:50%;" dx-select-box="consitionalFormattingAvailableColumnsSelectBoxOptions"></div>
+                        <div style="float:left;width:49%;margin-right:5px;" id="conditionFormatingTargetColumn" dx-select-box="conditionalFormattingAvailableTargetColumnsOptions"></div>
+                        <div style="float:right;width:50%;" dx-select-box="conditionalFormattingAvailableColumnsSelectBoxOptions"></div>
                     </div>
-                    <div style="float:left;width:100%;margin-top:5px;" dx-text-box="conditionalFormatingExpressionTextBoxOptions"></div>
+                    <div style="float:left;width:100%;margin-top:5px;" dx-text-box="conditionalFormattingExpressionTextBoxOptions"></div>
                 </div>
             </div>
             <div class="field-container">
@@ -28,12 +28,12 @@
                 <div style="margin:5px;float:right;width:30%;">
                     <div id="conditionalFormattingRuleList" dx-list="rulesListOptions"></div>
                     <div style="margin-top:10px;" dx-color-box="conditionalFormattingColorBox"></div>
-                    <div style="margin-top:10px;" dx-select-box="availableIconsSelectBoxOptions"></div>
+                    <div style="margin-top:10px;" dx-select-box="condtionalFormattingAvailableIconsSelectBoxOptions"></div>
                 </div>
             </div>
             <div class="field-container">
                 <div style="float:left;width:48%;margin-bottom:20px;" dx-button="conditionalFormattingTestExpressionButtonOptions"></div>
-                <div style="float:right;width:48%;margin-bottom:20px;" dx-button="createConditionalFormattingButtonOptions"></div>
+                <div style="float:right;width:48%;margin-bottom:20px;" dx-button="conditionalFormattingcreateButtonOptions"></div>
             </div>
         </div>
     </div>
@@ -44,9 +44,9 @@
             <div class="dx-fieldset-header">Select an existing custom column...</div>
             <div class="dx-field">
                 <div style="width:100%;min-height:30px;">
-                    <div style="float:left;width:40%;" id="existingCustomColumns" dx-select-box="existingCustomColumnsSelectBoxOptions"></div>
-                    <div style="float:right;width:28%;margin:0px;" dx-button="deleteExistingCustomColumnButtonOptions"></div>
-                    <div style="float:right;width:27%;margin:0px 5px 0px 0px;" dx-button="loadExistingCustomColumnButtonOptions"></div>
+                    <div style="float:left;width:40%;" id="existingCustomColumns" dx-select-box="customColumnExistingCustomColumnsSelectBoxOptions"></div>
+                    <div style="float:right;width:28%;margin:0px;" dx-button="customColumndeleteExistingCustomColumnButtonOptions"></div>
+                    <div style="float:right;width:27%;margin:0px 5px 0px 0px;" dx-button="customColumnloadExistingCustomColumnButtonOptions"></div>
                 </div>
             </div>
         </div>
@@ -61,7 +61,7 @@
                 <div style="width:100%;" dx-text-box="customColumnExpressionTextBoxOptions"></div>
                 <div style="width:100%;margin-top:5px;min-height:30px;">
                     <div style="float:left;width:50%;margin:0px 5px 0px 0px;" dx-button="customColumnTestExpressionButtonOptions"></div>
-                    <div style="float:right;width:49%;margin:0px" dx-button="createRuleButtonOptions"></div>
+                    <div style="float:right;width:49%;margin:0px" dx-button="customColumncreateRuleButtonOptions"></div>
                 </div>
             </div>
         </div>
@@ -87,7 +87,7 @@
             </div>
         </div>
         <div style="width:100%;margin-top:5px;min-height:30px;">
-            <div style="width:100%;margin:0px" dx-button="columnManagementValidateButtonOptions"></div>
+            <div id="columnManagementValidateButton" style="width:100%;margin:0px" dx-button="columnManagementValidateButtonOptions"></div>
         </div>
     </div>
 </div>

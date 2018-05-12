@@ -5,23 +5,16 @@ dxGridExtensionDemo
         $scope.demoTreeData = window.dxGridExtensionsDemo.cashData;
 
         $scope.flatGrid = {};
-        // $scope.treeGrid = {};
+        $scope.treeGrid = {};
 
-        var root = _.find($scope.demoTreeData, (item) => {
-            return item.uniqueParentId === null;
-        });
 
         var height = window.outerHeight - 100;
 
-        $scope.rootId = [root.uniqueId];
+        $scope.expandedRowKeys = _.transform($scope.demoTreeData, (aggregate, item) => {
+            aggregate.push(item.uniqueId);
+        }, []);
 
         $scope.demoFlatGridOptions = {
-
-            // bindingOptions: {
-            //     dataSource: 'management.datasource',
-            //     'summary.groupItems': 'management.groupItems',
-            //     'columns': 'management.columns'
-            // },
             height: height,
             resize: true,
             allowColumnReordering: true,
@@ -61,45 +54,37 @@ dxGridExtensionDemo
             }
         };
 
-        // $scope.demoTreeGridOptions = {
-        //     bindingOptions: {
-        //         dataSource: 'self.demoTreeData',
-        //         columns: 'self.config.treeGrid.columns',
-        //         expandedRowKeys: 'self.rootId'
-        //     },
-        //     height: height,
-        //     keyExpr: "uniqueId",
-        //     parentIdExpr: "uniqueParentId",
-        //     showRowLines: false,
-        //     allowColumnResizing: true,
-        //     allowColumnReordering: true,
-        //     columnAutoWidth: true,
-        //     columnResizingMode: "widget",
-        //     selection: {
-        //         mode: "single"
-        //     },
-        //     columnFixing: {
-        //         enabled: true
-        //     },
-        //     searchPanel: {
-        //         visible: true
-        //     },
-        //     filterRow: {
-        //         visible: false
-        //     },
-        //     headerFilter: {
-        //         visible: false
-        //     },
-        //     columnChooser: {
-        //         enabled: true
-        //     }
-        // };
-
-        $timeout(() => {
-
-            console.log($scope);
-
-        }, 3000);
+        $scope.demoTreeGridOptions = {
+            bindingOptions: {
+                expandedRowKeys: 'self.expandedRowKeys'
+            },
+            height: height,
+            keyExpr: "uniqueId",
+            parentIdExpr: "uniqueParentId",
+            showRowLines: false,
+            allowColumnResizing: true,
+            allowColumnReordering: true,
+            columnAutoWidth: true,
+            columnResizingMode: "widget",
+            selection: {
+                mode: "single"
+            },
+            columnFixing: {
+                enabled: true
+            },
+            searchPanel: {
+                visible: true
+            },
+            filterRow: {
+                visible: false
+            },
+            headerFilter: {
+                visible: false
+            },
+            columnChooser: {
+                enabled: true
+            }
+        };
 
 
     });
