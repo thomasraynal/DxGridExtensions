@@ -63,4 +63,4 @@ gulp.task('watch', function() {
     gulp.watch(['./src/css/*.css'], ['css']);
 });
 
-gulp.task('default', ['css', 'templates', 'js', 'watch', 'test', 'connect']);
+gulp.task('default', ['css', 'templates', 'js', 'watch',  'connect']);

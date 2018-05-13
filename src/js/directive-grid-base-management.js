@@ -8,52 +8,11 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
     $controller,
     $timeout) {
 
-    $scope.self = parent
 
-    if (dxGridExtensions.isUndefinedOrNull($scope.self.gridManagement)) {
-        $scope.self.gridManagement = {};
-    }
-
-    $scope.management = $scope.self.gridManagement[attributes.instance] = {};
-
-    $scope.management.columns = [];
-    $scope.management.groupItems = [];
-    $scope.management.customColumns = [];
-    $scope.management.conditionalFormattingRules = [];
-
-    $scope.management.instance = $scope.self[attributes.instance];
-
-    $scope.management.name = attributes.instance;
-    $scope.management.options = $scope.self[attributes.options];
-
-    $scope.management.datasource = $scope.self[attributes.datasource];
-
-    $scope.$control = element;
-
-    if (dxGridExtensions.isUndefinedOrNull($scope.management.options.bindingOptions)) {
-        $scope.management.options.bindingOptions = {};
-    }
-
-    $scope.management.options.bindingOptions.dataSource = 'management.datasource';
-    $scope.management.options.bindingOptions.columns = 'management.columns';
-
-    if ($scope.canGroup) $scope.management.options.bindingOptions['summary.groupItems'] = 'management.groupItems';
-
-
-    var columns = dxGridExtensions.isUndefinedOrNull(getConfig('columns')) ? null : getConfig('columns');
-    setConfig('columns', columns);
-
-    if ($scope.canGroup) {
-        var groupItems = dxGridExtensions.isUndefinedOrNull(getConfig('groupItems')) ? null : getConfig('groupItems');
-        if (!$scope.canGroup) setConfig('groupItems', groupItems);
-    }
-
-
-    $timeout(() => initialize());
+    initialize();
 
 
     $scope.updateGrid = (action) => {
-
         $scope.management.instance.beginUpdate();
         action();
         $scope.management.instance.endUpdate();
@@ -186,31 +145,72 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
 
     function initialize() {
 
-        //   $timeout(() => {
+        $scope.self = parent
 
-        var grid = getGridInstance();
-
-        if (dxGridExtensions.isUndefinedOrNull(grid.option("onCellPrepared"))) {
-            addEventHandler("onCellPrepared", function(options) {
-                _.each(getConfig('conditionalFormattingRules'), function(rule) {
-                    conditionalFormattingConfiguration.applyConditionalFormattingExpressionOnCell(options, rule, $scope.management.datasource);
-                });
-            });
+        if (dxGridExtensions.isUndefinedOrNull($scope.self.gridManagement)) {
+            $scope.self.gridManagement = {};
         }
 
-        addEventHandler("onContextMenuPreparing", function(options) {
-            if (options.row && options.row.rowType === 'data') {
-                options.items = getGridMenuItems(options);
+        $scope.management = $scope.self.gridManagement[attributes.instance] = {};
+
+        $scope.management.columns = [];
+        $scope.management.groupItems = [];
+        $scope.management.customColumns = [];
+        $scope.management.conditionalFormattingRules = [];
+
+        $scope.management.instance = $scope.self[attributes.instance];
+
+        $scope.management.name = attributes.instance;
+        $scope.management.options = $scope.self[attributes.options];
+
+        $scope.management.datasource = $scope.self[attributes.datasource];
+
+        $scope.$control = element;
+
+        if (dxGridExtensions.isUndefinedOrNull($scope.management.options.bindingOptions)) {
+            $scope.management.options.bindingOptions = {};
+        }
+
+        $scope.management.options.bindingOptions.dataSource = 'management.datasource';
+        $scope.management.options.bindingOptions.columns = 'management.columns';
+
+        if ($scope.canGroup) $scope.management.options.bindingOptions['summary.groupItems'] = 'management.groupItems';
+
+
+        var columns = dxGridExtensions.isUndefinedOrNull(getConfig('columns')) ? null : getConfig('columns');
+        setConfig('columns', columns);
+
+        if ($scope.canGroup) {
+            var groupItems = dxGridExtensions.isUndefinedOrNull(getConfig('groupItems')) ? null : getConfig('groupItems');
+            if (!$scope.canGroup) setConfig('groupItems', groupItems);
+        }
+
+
+        $timeout(() => {
+
+            var grid = getGridInstance();
+
+            if (dxGridExtensions.isUndefinedOrNull(grid.option("onCellPrepared"))) {
+                addEventHandler("onCellPrepared", function(options) {
+                    _.each(getConfig('conditionalFormattingRules'), function(rule) {
+                        conditionalFormattingConfiguration.applyConditionalFormattingExpressionOnCell(options, rule, $scope.management.datasource);
+                    });
+                });
             }
-        });
 
-        addEventHandler("customizeColumns", function(columns) {
-            _.each(columns, function(column) {
-                column.groupCellTemplate = window.dxGridExtensions.groupCellTemplate;
+            addEventHandler("onContextMenuPreparing", function(options) {
+                if (options.row && options.row.rowType === 'data') {
+                    options.items = getGridMenuItems(options);
+                }
             });
-        });
 
-        // });
+            addEventHandler("customizeColumns", function(columns) {
+                _.each(columns, function(column) {
+                    column.groupCellTemplate = window.dxGridExtensions.groupCellTemplate;
+                });
+            });
+
+        });
     };
 
     function getGridInstance() {
@@ -305,14 +305,9 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
         };
     };
 
-    var args = { $scope: $scope };
-
-
-    $controller('columnManagement', args);
-    $controller('conditionalFormatting', args);
-    $controller('columnChooser', args)
-    $controller('customColumns', args)
-
-
+    $controller('columnManagement', { $scope: $scope });
+    $controller('conditionalFormatting', { $scope: $scope });
+    $controller('columnChooser', { $scope: $scope })
+    $controller('customColumns', { $scope: $scope })
 
 });
