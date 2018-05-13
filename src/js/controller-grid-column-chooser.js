@@ -167,7 +167,6 @@ dxGridExtension.controller('columnChooser', function columnChooserCrtl($scope, $
                     });
                     $scope.management.showColumnChooserConsole = false;
                 });
-
         }
     };
 

@@ -5,7 +5,8 @@ var gulp = require('gulp'),
     concat = require('gulp-concat'),
     ngAnnotate = require('gulp-ng-annotate'),
     templateCache = require('gulp-angular-templatecache'),
-    babel = require('gulp-babel');
+    babel = require('gulp-babel'),
+    Karma = require('karma').Server;
 
 
 var targetDir = './dist';
@@ -38,7 +39,15 @@ gulp.task('js', function() {
         .pipe(uglify())
         .pipe(gulp.dest(targetDir))
         .pipe(gulp.dest('demo/js'));
-}); 
+});
+
+
+gulp.task('test', function(done) {
+    new Karma({
+        configFile: __dirname + '/karma.conf.js',
+        singleRun: true
+    }, done).start();
+});
 
 gulp.task('connect', function() {
     connect.server({
@@ -54,4 +63,4 @@ gulp.task('watch', function() {
     gulp.watch(['./src/css/*.css'], ['css']);
 });
 
-gulp.task('default', ['css', 'templates', 'js', 'watch', 'connect']);
+gulp.task('default', ['css', 'templates', 'js', 'watch', 'test', 'connect']);
