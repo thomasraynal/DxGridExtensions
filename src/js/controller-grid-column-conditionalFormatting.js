@@ -19,6 +19,9 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
     $scope.currentConditionalFormattingColor = defaultColor;
     $scope.selectedConditionalFormattingIcon = defaultIcon;
 
+    //refacto handle use of customs column in expression
+    $scope.expressionCompliantColumns = [];
+
     $scope.management.conditionalFormattingRules = _.transform($scope.management.conditionalFormattingRules, function(result, item) {
         result.push(conditionalFormattingConfiguration.getRuleFromdescriptor(item))
     }, []);
@@ -80,6 +83,11 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
         $scope.conditionalFormatingTargetColumn = null;
 
         dxGridExtensions.resetSelectBoxValue("#conditionFormatingTargetColumn");
+
+        //refacto handle use of customs column in expression
+        $scope.expressionCompliantColumns = _.filter($scope.management.columns, (column) => {
+            return !column.isCustomColumn;
+        });
     });
 
     $scope.$watch('conditionalFormatingTargetColumn', function() {
@@ -104,7 +112,7 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
 
     $scope.conditionalFormattingAvailableColumnsSelectBoxOptions = {
         bindingOptions: {
-            items: "management.columns",
+            items: "expressionCompliantColumns",
             value: "selectedAvailableColumn",
             disabled: 'isExpressionDisabled'
         },
@@ -164,7 +172,7 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
 
     $scope.conditionalFormattingAvailableTargetColumnsOptions = {
         bindingOptions: {
-            items: "management.columns"
+            items: "expressionCompliantColumns"
         },
         onItemClick: function(e) {
             $scope.conditionalFormatingTargetColumn = e.itemData.dataField;
@@ -278,9 +286,19 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
         placeholder: 'Load existing rule...'
     };
 
+    function createRule() {
+
+        return conditionalFormattingConfiguration.createRule(
+            $scope.selectedConditionalFormattingRule.text,
+            $scope.conditionalFormatingTargetColumn,
+            $scope.conditionalFormatingExpressionText,
+            $scope.currentConditionalFormattingColor,
+            $scope.selectedConditionalFormattingIcon);
+    };
+
     function applyRule() {
 
-        applyConditionalFormattingExpression();
+        applyExpression();
 
         if (dxGridExtensions.isUndefinedOrNull($scope.conditionalFormatingGrid)) return;
 
@@ -288,13 +306,7 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
 
         if (dxGridExtensions.isUndefinedOrNull($scope.selectedConditionalFormattingRule)) return;
 
-        var rule = conditionalFormattingConfiguration.createRule(
-            $scope.selectedConditionalFormattingRule.text,
-            $scope.conditionalFormatingTargetColumn,
-            $scope.conditionalFormatingExpressionText,
-            $scope.currentConditionalFormattingColor,
-            $scope.selectedConditionalFormattingIcon
-        );
+        var rule = createRule();
 
         grid.option("onCellPrepared", function(options) {
             conditionalFormattingConfiguration.applyConditionalFormattingExpressionOnCell(options, rule, $scope.management.datasource);
@@ -303,18 +315,12 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
         grid.repaint();
     };
 
-
-    $scope.conditionalFormattingCreateRule = function() {
+    //refacto scoped for testing purpose
+    $scope.conditionalFormattingCreateRule = () => {
 
         if (dxGridExtensions.isUndefinedOrNull($scope.management.instance)) return;
 
-        var rule = conditionalFormattingConfiguration.createRule(
-            $scope.selectedConditionalFormattingRule.text,
-            $scope.conditionalFormatingTargetColumn,
-            $scope.conditionalFormatingExpressionText,
-            $scope.currentConditionalFormattingColor,
-            $scope.selectedConditionalFormattingIcon
-        );
+        var rule = createRule();
 
         _.remove($scope.management.conditionalFormattingRules, { target: rule.target });
 
@@ -323,10 +329,9 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
         $scope.management.instance.repaint();
 
         $scope.management.showConditionalFormattingConsole = false;
-
     };
 
-    function applyConditionalFormattingExpression() {
+    function applyExpression() {
 
         try {
             $scope.conditionalFormattingResult = [];

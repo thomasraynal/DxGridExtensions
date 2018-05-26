@@ -132,7 +132,7 @@ dxGridExtension.controller('columnChooser', function columnChooserCrtl($scope, $
             $scope.columnChooserGrid.dxDataGrid('instance')
                 .saveEditData()
                 .then((result) => {
-                    $scope.updateGrid(() => {
+                    $scope.safeUpdate(() => {
 
                         _.forEach($scope.columnChooserDataSource._array, function(item) {
 
@@ -227,17 +227,17 @@ dxGridExtension.controller('columnChooser', function columnChooserCrtl($scope, $
             },
             start: function(event, ui) {
 
-                var $originalRow = $(this);
-                var $clonedRow = ui.helper;
-                var $originalRowCells = $originalRow.children();
-                var $clonedRowCells = $clonedRow.children();
+                var originalRow = $(this);
+                var clonedRow = ui.helper;
+                var originalRowCells = originalRow.children();
+                var clonedRowCells = clonedRow.children();
 
-                for (var i = 0; i < $originalRowCells.length; i++) {
-                    $($clonedRowCells.get(i)).width($($originalRowCells.get(i)).width());
+                for (var i = 0; i < originalRowCells.length; i++) {
+                    $(clonedRowCells.get(i)).width($(originalRowCells.get(i)).width());
                 }
 
-                $clonedRow.width($originalRow.width())
-                $clonedRow.addClass('drag-helper');
+                clonedRow.width(originalRow.width())
+                clonedRow.addClass('drag-helper');
             }
         });
 
@@ -329,7 +329,7 @@ dxGridExtension.controller('columnChooser', function columnChooserCrtl($scope, $
         var format = getColumnFormat(column);
 
         return {
-            Id: id,
+            id: id,
             dataField: column.dataField,
             caption: column.caption + '',
             visible: column.visible,

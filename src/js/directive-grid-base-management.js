@@ -8,11 +8,9 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
     $controller,
     $timeout) {
 
-
     initialize();
 
-
-    $scope.updateGrid = (action) => {
+    $scope.safeUpdate = (action) => {
         $scope.management.instance.beginUpdate();
         action();
         $scope.management.instance.endUpdate();
@@ -47,15 +45,11 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
         setConfig('groupItems', groups);
     });
 
-
     $scope.$watch($scope.management.options.bindingOptions.dataSource, function() {
 
 
         if (dxGridExtensions.isUndefinedOrNull($scope.management.datasource) || $scope.management.datasource.length == 0) return;
 
-        _.each(getConfig('customColumns'), function(rule) {
-            customColumnConfiguration.computeCustomColumn(rule, $scope.management.datasource);
-        });
 
         var template = $scope.management.datasource[0];
 
@@ -75,7 +69,7 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
                 return c.dataField == field
             });
 
-            if (null != existingColumn) {
+            if (!dxGridExtensions.isUndefinedOrNull(existingColumn)) {
 
                 aggregate.push(existingColumn);
 
@@ -87,21 +81,17 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
                     if (!dxGridExtensions.isUndefinedOrNull($scope.management.datasource[i][field])) {
 
                         if (typeof($scope.management.datasource[i][field]) === "boolean") {
-
                             columnOption.dataType = "boolean";
-
                             break;
                         }
 
                         if (dxGridExtensions.isInt($scope.management.datasource[i][field])) {
-
                             columnOption.dataType = "number";
                             columnOption.format = { type: 'fixedpoint', precision: 0 };
                             break;
                         }
 
                         if (dxGridExtensions.isFloat($scope.management.datasource[i][field])) {
-
                             columnOption.dataType = "number";
                             columnOption.summaryType = "sum";
                             columnOption.format = { type: 'fixedpoint', precision: 2 };
@@ -115,11 +105,28 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
                     }
                 };
 
+                columnOption.isCustomColumn = false;
+
                 aggregate.push(columnOption);
 
             }
         }, []);
 
+        _.each(getConfig('customColumns'), function(customColumn) {
+
+            var column = _.find(getConfig('columns'), function(c) {
+                return c.dataField == customColumn.name
+            });
+
+            column.isCustomColumn = true;
+
+            column.calculateCellValue = (data) => {
+                return customColumnConfiguration.computeCustomColumn(this.rule, data);
+            };
+
+            column.rule = customColumn.rule;
+
+        });
 
         setConfig('columns', columns);
     });
@@ -150,6 +157,7 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
         if (dxGridExtensions.isUndefinedOrNull($scope.self.gridManagement)) {
             $scope.self.gridManagement = {};
         }
+
 
         $scope.management = $scope.self.gridManagement[attributes.instance] = {};
 
@@ -185,6 +193,65 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
             if (!$scope.canGroup) setConfig('groupItems', groupItems);
         }
 
+        $scope.management.save = () => {
+            return {
+                columns: $scope.management.columns,
+                conditionalFormattingRules: $scope.management.conditionalFormattingRules,
+                customColumns: $scope.management.customColumns,
+                groupItems: $scope.management.groupItems,
+                name: $scope.management.name,
+                state: ($scope.canGroup) ? $scope.management.instance.state() : null
+            };
+        };
+
+        $scope.management.restore = (layout) => {
+
+            $scope.management.conditionalFormattingRules = _.transform(layout.conditionalFormattingRules, (aggregate, rule) => {
+
+                aggregate.push(conditionalFormattingConfiguration.createRule(
+                    rule.text,
+                    rule.target,
+                    rule.expression,
+                    rule.color,
+                    rule.icon
+                ));
+
+            }, []);
+
+            $scope.management.customColumns = _.transform(layout.customColumns, (aggregate, column) => {
+
+                aggregate.push(customColumnConfiguration.createCustomColumn(
+                    column.name,
+                    column.expression,
+                    column.formatting,
+                    column.visibleIndex
+                ));
+
+            }, []);
+
+            $scope.management.columns = _.transform(layout.columns, (aggregate, column) => {
+
+                if (column.isCustomColumn) {
+                    var customColumn = _.find($scope.management.customColumns, (custom) => custom.dataField == column.dataField);
+                    aggregate.push(customColumn);
+                } else {
+                    aggregate.push(column);
+                }
+
+            }, []);
+
+
+            if ($scope.canGroup) {
+
+                $scope.management.groupItems = layout.groupItems;
+                $scope.management.instance.state(layout.state);
+            }
+
+
+            $scope.management.instance.refresh();
+            $scope.management.instance.repaint();
+
+        };
 
         $timeout(() => {
 
@@ -197,6 +264,17 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
                     });
                 });
             }
+
+            addEventHandler("onContentReady", function(e) {
+
+                //keep sync with internal dxDataGrid processes
+                _.each($scope.management.columns, (column) => {
+                    column.visible = e.component.columnOption(column.dataField, "visible");
+                    column.visibleIndex = e.component.columnOption(column.dataField, "visibleIndex");
+                });
+
+
+            });
 
             addEventHandler("onContextMenuPreparing", function(options) {
                 if (options.row && options.row.rowType === 'data') {

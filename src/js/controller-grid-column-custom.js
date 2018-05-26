@@ -13,6 +13,9 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
     $scope.selectedExistingCustomColumn = null;
     $scope.isExistingCustomColumnActionDisabled = false;
 
+    //refacto handle use of customs column in expression
+    $scope.expressionCompliantColumns = [];
+
     $scope.$watch('management.showCustomColumnConsole', function() {
 
         if (!$scope.management.showCustomColumnConsole) return;
@@ -23,6 +26,11 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
 
         dxGridExtensions.resetSelectBoxValue("#customColumnAvailableColumnsFormat");
         dxGridExtensions.resetSelectBoxValue("#existingCustomColumns");
+
+        //refacto handle use of customs column in expression
+        $scope.expressionCompliantColumns = _.filter($scope.management.columns, (column) => {
+            return !column.isCustomColumn;
+        });
 
         $scope.selectedExistingCustomColumn = '';
         $scope.customColumnFormating = '';
@@ -72,7 +80,7 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
 
     $scope.customColumnAvailableColumnsSelectBoxOptions = {
         bindingOptions: {
-            items: "management.columns",
+            items: "expressionCompliantColumns",
             value: "customColumnSelectedAvailableColumn"
         },
         displayExpr: "dataField",
@@ -130,7 +138,7 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
         bindingOptions: {
             disabled: 'cannotCreateColumn'
         },
-        onClick: applyCustomColumnExpression
+        onClick: applyExpression
     };
 
     $scope.customColumncreateRuleButtonOptions = {
@@ -150,7 +158,7 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
             disabled: 'isExistingCustomColumnActionDisabled'
         },
         onClick: function() {
-            removeCustomColumn($scope.selectedExistingCustomColumn.name);
+            removeColumn($scope.selectedExistingCustomColumn.name);
             $scope.management.showCustomColumnConsole = false;
         }
     };
@@ -163,7 +171,7 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
         onClick: function() {
             $scope.customColumnName = $scope.selectedExistingCustomColumn.name;
             $scope.customColumnExpressionText = $scope.selectedExistingCustomColumn.expression;
-            $scope.customColumnFormating = $scope.selectedExistingCustomColumn.format;
+            $scope.customColumnFormating = $scope.selectedExistingCustomColumn.formatting;
         }
     };
 
@@ -176,39 +184,33 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
         placeholder: 'Load existing column...'
     };
 
-    $scope.customColumnCreateColumn = function() {
+    //refacto scoped for testing purpose
+    $scope.customColumnCreateColumn = () => {
 
-        applyCustomColumnExpression();
+        applyExpression();
 
         if (dxGridExtensions.isUndefinedOrNull($scope.management.instance)) return;
 
-        var rule = customColumnConfiguration.createCustomColumn(
+        var column = customColumnConfiguration.createCustomColumn(
             $scope.customColumnName,
             $scope.customColumnExpressionText,
-            $scope.customColumnFormating
+            $scope.customColumnFormating,
+            $scope.management.currentColumn.visibleIndex
         );
 
-        var doesColumnExist = _.remove($scope.management.customColumns, { name: rule.name }).length > 0;
+        removeColumn(column.name);
 
-        if (doesColumnExist) {
-            removeCustomColumn(rule.name);
-        }
+        addColumn(column);
 
-        $scope.management.customColumns.push(rule)
+        $scope.management.showCustomColumnConsole = false;
+    };
 
-        customColumnConfiguration.computeCustomColumn(rule, $scope.management.datasource);
-
-        var column = {
-            dataField: $scope.customColumnName,
-            caption: $scope.customColumnName,
-            dataType: $scope.customColumnFormating.dataType,
-            format: { type: $scope.customColumnFormating.format.type, precision: $scope.customColumnFormating.format.precision },
-            visibleIndex: $scope.management.currentColumn.visibleIndex
-        };
-
+    function addColumn(column) {
+        
+        $scope.management.customColumns.push(column);
         $scope.management.columns.push(column);
 
-        if ($scope.customColumnFormating.dataType === 'number' && $scope.management.groupItems) {
+        if ($scope.customColumnFormating.dataType === 'number' && !dxGridExtensions.isUndefinedOrNull($scope.management.groupItems)) {
 
             $scope.management.groupItems.push({
                 column: column.dataField,
@@ -222,32 +224,18 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
                 displayFormat: "{0}"
             });
         }
-
-        var state = ($scope.management.instance.state) ? $scope.management.instance.state() : undefined;
-        if (state) $scope.management.instance.state(state);
-
-        $scope.management.showCustomColumnConsole = false;
     };
 
-    function removeCustomColumn(name) {
+    function removeColumn(name) {
 
         _.remove($scope.management.customColumns, { name: name });
-
-        _.each($scope.management.datasource, function(item) {
-            delete item[name];
-        });
-
         _.remove($scope.management.columns, { dataField: name });
         _.remove($scope.management.groupItems, { column: name });
 
         $scope.management.instance.repaint();
     };
 
-    function updateCanCreateColumn() {
-        $scope.cannotCreateColumn = $scope.customColumnFormating == '' || $scope.customColumnExpressionText == '' || dxGridExtensions.isUndefinedOrNull($scope.customColumnName) || dxGridExtensions.isUndefinedOrNull($scope.customColumnFormating);
-    };
-
-    function applyCustomColumnExpression() {
+    function applyExpression() {
 
         try {
 
@@ -264,36 +252,35 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
 
                     var sourceColumn = column.substring(1, column.length - 1);
 
-                    if (!item.hasOwnProperty(sourceColumn)) throw new Error("Column " + sourceColumn + " does not exist");
+                    if (!item.hasOwnProperty(sourceColumn)) {
+                        throw new Error("Column " + sourceColumn + " does not exist");
+                    }
 
                     customColumnResult[sourceColumn] = item[sourceColumn];
 
                 });
 
-                customColumnResult[$scope.customColumnName] = item[$scope.customColumnName];
+                customColumnResult[$scope.customColumnName] = customColumnConfiguration.computeCustomColumn(expression, item);
 
                 $scope.customColumnResult.push(customColumnResult);
-
             });
 
             if (dxGridExtensions.isUndefinedOrNull($scope.customColumnGrid)) return;
 
-            var grid = $scope.customColumnGrid.dxDataGrid('instance');
+            //important
+            $timeout(() => {
 
-            customColumnConfiguration.computeCustomColumn({
-                name: $scope.customColumnName,
-                expression: expression
-            }, $scope.customColumnResult);
+                var grid = $scope.customColumnGrid.dxDataGrid('instance');
+                grid.columnOption($scope.customColumnName, 'dataType', $scope.customColumnFormating.dataType);
 
-            grid.columnOption($scope.customColumnName, 'dataType', $scope.customColumnFormating.dataType);
+                if ($scope.customColumnFormating.format != null) {
 
-            if ($scope.customColumnFormating.format != null) {
-
-                grid.columnOption($scope.customColumnName, 'format', {
-                    type: $scope.customColumnFormating.format.type,
-                    precision: $scope.customColumnFormating.format.precision
-                });
-            }
+                    grid.columnOption($scope.customColumnName, 'format', {
+                        type: $scope.customColumnFormating.format.type,
+                        precision: $scope.customColumnFormating.format.precision
+                    });
+                }
+            }, 500);
 
         } catch (e) {
 
@@ -302,7 +289,12 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
             })
 
             return;
-
         }
     };
+
+    function updateCanCreateColumn() {
+        $scope.cannotCreateColumn = $scope.customColumnFormating == '' || $scope.customColumnExpressionText == '' || dxGridExtensions.isUndefinedOrNull($scope.customColumnName) || dxGridExtensions.isUndefinedOrNull($scope.customColumnFormating);
+    };
+
+
 });

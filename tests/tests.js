@@ -1,5 +1,9 @@
 describe('dxGridExtensionTests', function() {
 
+    //column chooser
+    //remove and edit custom column
+    //remove and edit conditional formatting
+
     var $timeout;
 
     function render() {
@@ -22,10 +26,11 @@ describe('dxGridExtensionTests', function() {
 
         $timeout = _$timeout_;
 
-        //underlying data are changed on column added, hence cloning
-        $rootScope.demoFlatData = JSON.parse(JSON.stringify(window.dxGridExtensionsDemo.stockData));
+        $rootScope.demoFlatData = window.dxGridExtensionsDemo.stockData;
+        $rootScope.demoTreeData = window.dxGridExtensionsDemo.cashData;
 
         $rootScope.flatGrid = {};
+        $rootScope.treeGrid = {};
 
         $rootScope.demoFlatGridOptions = {
             height: 100,
@@ -67,18 +72,49 @@ describe('dxGridExtensionTests', function() {
             }
         };
 
-        var element = $compile('<flat-grid instance="flatGrid" options="demoFlatGridOptions" datasource="demoFlatData"/>')($rootScope);
+        $rootScope.demoTreeGridOptions = {
+            height: 100,
+            keyExpr: "uniqueId",
+            parentIdExpr: "uniqueParentId",
+            showRowLines: false,
+            allowColumnResizing: true,
+            allowColumnReordering: true,
+            columnAutoWidth: true,
+            columnResizingMode: "widget",
+            selection: {
+                mode: "single"
+            },
+            columnFixing: {
+                enabled: true
+            },
+            searchPanel: {
+                visible: true
+            },
+            filterRow: {
+                visible: false
+            },
+            headerFilter: {
+                visible: false
+            },
+            columnChooser: {
+                enabled: true
+            }
+        };
 
-        $rootScope.directiveScope = angular.element(element[0]).scope();
+        var flatGridelement = $compile('<flat-grid instance="flatGrid" options="demoFlatGridOptions" datasource="demoFlatData"/>')($rootScope);
+        var treeGridElement = $compile('<tree-grid instance="treeGrid" options="demoTreeGridOptions" datasource="demoTreeData"/>')($rootScope);
 
-        $rootScope.directiveScope.$digest();
+        $rootScope.flatGridDirectiveScope = angular.element(flatGridelement[0]).scope();
+        $rootScope.flatGridDirectiveScope.$digest();
+
+        $rootScope.treeGridDirectiveScope = angular.element(treeGridElement[0]).scope();
+        $rootScope.treeGridDirectiveScope.$digest();
     }));
-
 
 
     it('should test flat grid - column management', function() {
 
-        var testScope = $rootScope.directiveScope;
+        var testScope = $rootScope.flatGridDirectiveScope;
 
         expect(testScope.management.datasource).toEqual($rootScope.demoFlatData);
         expect(testScope.management.groupItems.length).toEqual(4);
@@ -114,7 +150,7 @@ describe('dxGridExtensionTests', function() {
 
     it('should test flat grid - custom column', function(done) {
 
-        var testScope = $rootScope.directiveScope;
+        var testScope = $rootScope.flatGridDirectiveScope;
 
         testScope.management.showCustomColumnConsole = true;
 
@@ -159,7 +195,7 @@ describe('dxGridExtensionTests', function() {
 
     it('should test flat grid - conditional formatting', function(done) {
 
-        var testScope = $rootScope.directiveScope;
+        var testScope = $rootScope.flatGridDirectiveScope;
 
         testScope.management.showConditionalFormattingConsole = true;
 
@@ -189,6 +225,89 @@ describe('dxGridExtensionTests', function() {
             var html = window.btoa(testScope.management.instance._$element.html())
 
             expect(html).toEqual(expectedHtml);
+            done();
+
+        };
+
+        wait(finalizer);
+    });
+
+    it('should test tree grid - custom column', function(done) {
+
+        var testScope = $rootScope.treeGridDirectiveScope;
+        var columnCount = testScope.management.columns.length;
+
+        testScope.management.showCustomColumnConsole = true;
+
+        render();
+
+        expect(testScope.management.customColumns.length).toEqual(0);
+
+        testScope.customColumnName = "NEW";
+        testScope.customColumnExpressionText = "[balanceon2015-12-07] * 2"
+        testScope.customColumnFormating = {
+            dataType: "number",
+            format: { type: 'fixedpoint', precision: 2 }
+        };
+
+        testScope.management.currentColumn = _.find(testScope.management.columns, (column) => column.dataField == "balanceon2015-12-07");
+
+        testScope.customColumnCreateColumn();
+
+        expect(testScope.management.customColumns.length).toEqual(1);
+        expect(testScope.customColumnResult.length).toEqual(testScope.management.datasource.length);
+
+        testScope.management.instance.refresh();
+
+        testScope.$digest();
+
+        var finalizer = function() {
+
+            expect(testScope.management.columns.length).toEqual(columnCount + 1);
+
+            var customColumn = _.find(testScope.management.columns, (column) => column.dataField == testScope.customColumnName);
+
+            expect(customColumn).not.toBeNull();
+
+            done();
+        };
+
+        wait(finalizer);
+    });
+
+    it('should test tree grid - column chooser', function() {});
+
+    it('should test tree grid - conditional formatting', function(done) {
+
+        var testScope = $rootScope.treeGridDirectiveScope;
+
+        testScope.management.showConditionalFormattingConsole = true;
+
+        render();
+
+        expect(testScope.management.conditionalFormattingRules.length).toEqual(0);
+
+        testScope.selectedConditionalFormattingRule = {
+            text: "Proportional Bars"
+        };
+
+        testScope.conditionalFormatingTargetColumn = "balanceon2015-12-07";
+        testScope.currentConditionalFormattingColor = "#ffd900";
+
+        testScope.conditionalFormattingCreateRule();
+
+        expect(testScope.management.conditionalFormattingRules.length).toEqual(1);
+        expect(testScope.conditionalFormattingResult.length).toEqual(testScope.management.datasource.length);
+
+        testScope.management.instance.refresh();
+
+        testScope.$digest();
+
+        var finalizer = function() {
+
+            // var html = window.btoa(testScope.management.instance._$element.html())
+
+            // expect(html).toEqual(expectedHtml);
             done();
 
         };

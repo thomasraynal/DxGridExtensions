@@ -79,7 +79,7 @@ dxGridExtension.controller('columnManagement', function columnManagementCrtl($sc
 
     $scope.columnManagementValidate = function() {
 
-        $scope.updateGrid(() => {
+        $scope.safeUpdate(() => {
 
             $scope.management.instance.columnOption($scope.management.currentColumn.dataField, 'caption', $scope.columnManagementColumnName);
             $scope.management.instance.columnOption($scope.management.currentColumn.dataField, 'dataType', $scope.columnManagementColumnFormating.value.dataType);

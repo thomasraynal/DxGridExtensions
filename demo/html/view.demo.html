@@ -1,8 +1,24 @@
 <div id="container">
     <div style="float:left;width:50%;">
-        <flat-grid instance="flatGrid" options='demoFlatGridOptions' datasource="demoFlatData"  />
+        <div style="width:430px">
+            <div style="width:150px;" dx-button="saveFlatGridButtonOptions"></div>
+            <div style="width:175px;" dx-button="loadLayoutFlatGridButtonOptions"></div>
+            <div style="width:100px;float: right;" dx-select-box="savedFlatGridLayoutSelectBoxOptions"></div>
+        </div>
+        <div>
+            <flat-grid instance="flatGrid" options='demoFlatGridOptions' datasource="demoFlatData" />
+        </div>
     </div>
     <div style="float:right;width:48%;">
-        <tree-grid instance="treeGrid" options='demoTreeGridOptions'  datasource="demoTreeData" />
+        <div style="width:430px">
+            <div style="width:150px;" dx-button="saveTreeGridButtonOptions"></div>
+            <div style="width:175px;" dx-button="loadLayoutTreeGridButtonOptions"></div>
+            <div style="width:100px;float: right;" dx-select-box="savedTreeGridLayoutSelectBoxOptions"></div>
+        </div>
+        <div>
+            <div>
+                <tree-grid instance="treeGrid" options='demoTreeGridOptions' datasource="demoTreeData" />
+            </div>
+        </div>
     </div>
 </div>

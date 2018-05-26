@@ -1,39 +1,41 @@
 dxGridExtension.service('customColumnConfiguration', function($log) {
 
-    this.createCustomColumn = function(name, expression, format) {
+    this.createCustomColumn = function(name, expression, formatting, visibleIndex) {
 
         return {
             name: name,
             expression: expression,
-            format: format
+            formatting: formatting,
+            dataField: name,
+            caption: name,
+            isCustomColumn: true,
+            dataType: formatting.dataType,
+            format: { type: formatting.format.type, precision: formatting.format.precision },
+            visibleIndex: visibleIndex,
+            calculateCellValue: (data) => {
+                return this.computeCustomColumn(expression, data);
+            },
         };
     };
 
-    this.computeCustomColumn = function(rule, datasource) {
+
+    this.computeCustomColumn = function(expression, data) {
 
         try {
 
-            var self = this;
-            var expression = rule.expression;
             var replacement = {};
             var processedExpression = expression;
 
-            _.forEach(datasource, function(item) {
+            dxGridExtensions.initFormulas(this);
 
-                dxGridExtensions.initFormulas(self);
+            _.forEach(data, function(value, key) {
 
-                _.forEach(item, function(value, key) {
-
-                    var replacement = (typeof value) === "string" ? "'" + value + "'" : value;
-                    processedExpression = processedExpression.split('[' + key + ']').join(" " + replacement + " ");
-
-                });
-
-                var result = eval(processedExpression);
-                item[rule.name] = result;
-                processedExpression = expression;
+                var replacement = (typeof value) === "string" ? "'" + value + "'" : value;
+                processedExpression = processedExpression.split('[' + key + ']').join(" " + replacement + " ");
 
             });
+
+            return eval(processedExpression);
 
         } catch (e) {
             $log.error(e);
