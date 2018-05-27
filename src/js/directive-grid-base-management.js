@@ -260,14 +260,18 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
             if (dxGridExtensions.isUndefinedOrNull(grid.option("onCellPrepared"))) {
                 addEventHandler("onCellPrepared", function(options) {
                     _.each(getConfig('conditionalFormattingRules'), function(rule) {
-                        conditionalFormattingConfiguration.applyConditionalFormattingExpressionOnCell(options, rule, $scope.management.datasource);
+                        conditionalFormattingConfiguration.applyConditionalFormattingExpressionOnCell(
+                            options,
+                            rule,
+                            $scope.management.datasource,
+                            $scope.management.customColumns);
                     });
                 });
             }
 
             addEventHandler("onContentReady", function(e) {
 
-                //keep sync with internal dxDataGrid processes
+                //keep sync with internal dxDataGrid processes (column chooser, column position change...)
                 _.each($scope.management.columns, (column) => {
                     column.visible = e.component.columnOption(column.dataField, "visible");
                     column.visibleIndex = e.component.columnOption(column.dataField, "visibleIndex");

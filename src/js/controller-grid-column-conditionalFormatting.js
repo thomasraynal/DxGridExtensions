@@ -1,4 +1,4 @@
-dxGridExtension.controller('conditionalFormatting', function conditionalFormattingCrtl($scope, $controller, $timeout, conditionalFormattingConfiguration) {
+dxGridExtension.controller('conditionalFormatting', function conditionalFormattingCrtl($scope, $controller, $timeout, conditionalFormattingConfiguration,customColumnConfiguration) {
 
     const defaultColor = "#ff2600";
     const defaultIcon = conditionalFormattingConfiguration.availableIcons[0];
@@ -20,7 +20,7 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
     $scope.selectedConditionalFormattingIcon = defaultIcon;
 
     //refacto handle use of customs column in expression
-    $scope.expressionCompliantColumns = [];
+    // $scope.expressionCompliantColumns = [];
 
     $scope.management.conditionalFormattingRules = _.transform($scope.management.conditionalFormattingRules, function(result, item) {
         result.push(conditionalFormattingConfiguration.getRuleFromdescriptor(item))
@@ -85,9 +85,9 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
         dxGridExtensions.resetSelectBoxValue("#conditionFormatingTargetColumn");
 
         //refacto handle use of customs column in expression
-        $scope.expressionCompliantColumns = _.filter($scope.management.columns, (column) => {
-            return !column.isCustomColumn;
-        });
+        // $scope.expressionCompliantColumns = _.filter($scope.management.columns, (column) => {
+        //     return !column.isCustomColumn;
+        // });
     });
 
     $scope.$watch('conditionalFormatingTargetColumn', function() {
@@ -112,7 +112,7 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
 
     $scope.conditionalFormattingAvailableColumnsSelectBoxOptions = {
         bindingOptions: {
-            items: "expressionCompliantColumns",
+            items: "management.columns",
             value: "selectedAvailableColumn",
             disabled: 'isExpressionDisabled'
         },
@@ -172,7 +172,7 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
 
     $scope.conditionalFormattingAvailableTargetColumnsOptions = {
         bindingOptions: {
-            items: "expressionCompliantColumns"
+            items: "management.columns"
         },
         onItemClick: function(e) {
             $scope.conditionalFormatingTargetColumn = e.itemData.dataField;
@@ -309,7 +309,11 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
         var rule = createRule();
 
         grid.option("onCellPrepared", function(options) {
-            conditionalFormattingConfiguration.applyConditionalFormattingExpressionOnCell(options, rule, $scope.management.datasource);
+            conditionalFormattingConfiguration.applyConditionalFormattingExpressionOnCell(
+                options,
+                rule,
+                $scope.management.datasource,
+                $scope.management.customColumns);
         });
 
         grid.repaint();
@@ -334,11 +338,14 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
     function applyExpression() {
 
         try {
+
             $scope.conditionalFormattingResult = [];
+
             var expression = $scope.conditionalFormatingExpressionText;
+
             $scope.conditionalFormattingExpressionTargetedColumns = $scope.expression === '' ? [] : expression.match(/\[(.*?)\]/g);
 
-            _.each($scope.management.datasource, function(item) {
+            _.each($scope.management.datasource, function(row) {
 
                 var conditionalFormatingresult = {};
 
@@ -346,13 +353,31 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
 
                     var sourceColumn = column.substring(1, column.length - 1);
 
-                    if (!item.hasOwnProperty(sourceColumn)) throw new Error("Column " + sourceColumn + " does not exist");
+                    if (!row.hasOwnProperty(sourceColumn)) throw new Error("Column " + sourceColumn + " does not exist");
 
-                    conditionalFormatingresult[sourceColumn] = item[sourceColumn];
+                    var customColum = _.find($scope.management.customColumns, (c) => {
+                        return c.dataField == sourceColumn;
+                    });
+
+                    if (customColum) {
+                        conditionalFormatingresult[sourceColumn] = customColumnConfiguration.computeCustomColumn(customColum.expression, row);
+                    } else {
+                        conditionalFormatingresult[sourceColumn] = row[sourceColumn];
+                    }
 
                 });
 
-                conditionalFormatingresult[$scope.conditionalFormatingTargetColumn] = item[$scope.conditionalFormatingTargetColumn];
+                var value = row[$scope.conditionalFormatingTargetColumn]
+
+                var customColum = _.find($scope.management.customColumns, (c) => {
+                    return c.dataField == $scope.conditionalFormatingTargetColumn;
+                });
+
+                if (customColum) {
+                    value = customColumnConfiguration.computeCustomColumn(customColum.expression, row);
+                }
+
+                conditionalFormatingresult[$scope.conditionalFormatingTargetColumn] = value;
 
                 $scope.conditionalFormattingResult.push(conditionalFormatingresult);
 

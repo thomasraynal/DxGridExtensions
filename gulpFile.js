@@ -35,8 +35,8 @@ gulp.task('js', function() {
             presets: ['es2015']
         }))
         .pipe(concat('dx-grid-extensions.min.js'))
-        .pipe(ngAnnotate())
-        .pipe(uglify())
+        // .pipe(ngAnnotate())
+        // .pipe(uglify())
         .pipe(gulp.dest(targetDir))
         .pipe(gulp.dest('demo/js'));
 });
