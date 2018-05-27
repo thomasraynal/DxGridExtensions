@@ -1,4 +1,4 @@
-dxGridExtension.controller('conditionalFormatting', function conditionalFormattingCrtl($scope, $controller, $timeout, conditionalFormattingConfiguration,customColumnConfiguration) {
+dxGridExtension.controller('conditionalFormatting', function conditionalFormattingCrtl($scope, $controller, $timeout, conditionalFormattingConfiguration, customColumnConfiguration) {
 
     const defaultColor = "#ff2600";
     const defaultIcon = conditionalFormattingConfiguration.availableIcons[0];
@@ -312,8 +312,7 @@ dxGridExtension.controller('conditionalFormatting', function conditionalFormatti
             conditionalFormattingConfiguration.applyConditionalFormattingExpressionOnCell(
                 options,
                 rule,
-                $scope.management.datasource,
-                $scope.management.customColumns);
+                $scope.conditionalFormattingResult);
         });
 
         grid.repaint();

@@ -10,6 +10,8 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
 
     initialize();
 
+    $scope.isRestoreRunning = false;
+
     $scope.safeUpdate = (action) => {
         $scope.management.instance.beginUpdate();
         action();
@@ -206,50 +208,59 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
 
         $scope.management.restore = (layout) => {
 
-            $scope.management.conditionalFormattingRules = _.transform(layout.conditionalFormattingRules, (aggregate, rule) => {
+            $scope.isRestoreRunning = true;
 
-                aggregate.push(conditionalFormattingConfiguration.createRule(
-                    rule.text,
-                    rule.target,
-                    rule.expression,
-                    rule.color,
-                    rule.icon
-                ));
+            $scope.safeUpdate(() => {
 
-            }, []);
+                $scope.management.conditionalFormattingRules = _.transform(layout.conditionalFormattingRules, (aggregate, rule) => {
 
-            $scope.management.customColumns = _.transform(layout.customColumns, (aggregate, column) => {
+                    aggregate.push(conditionalFormattingConfiguration.createRule(
+                        rule.text,
+                        rule.target,
+                        rule.expression,
+                        rule.color,
+                        rule.icon
+                    ));
 
-                aggregate.push(customColumnConfiguration.createCustomColumn(
-                    column.name,
-                    column.expression,
-                    column.formatting,
-                    column.visibleIndex
-                ));
+                }, []);
 
-            }, []);
 
-            $scope.management.columns = _.transform(layout.columns, (aggregate, column) => {
+                $scope.management.customColumns = _.transform(layout.customColumns, (aggregate, column) => {
 
-                if (column.isCustomColumn) {
-                    var customColumn = _.find($scope.management.customColumns, (custom) => custom.dataField == column.dataField);
-                    aggregate.push(customColumn);
-                } else {
-                    aggregate.push(column);
+                    aggregate.push(customColumnConfiguration.createCustomColumn(
+                        column.name,
+                        column.expression,
+                        column.formatting,
+                        column.visibleIndex
+                    ));
+
+                }, []);
+
+                $scope.management.columns = _.transform(layout.columns, (aggregate, column) => {
+
+                    if (column.isCustomColumn) {
+                        var customColumn = _.find($scope.management.customColumns, (custom) => custom.dataField == column.dataField);
+                        aggregate.push(customColumn);
+                    } else {
+                        aggregate.push(column);
+                    }
+
+                }, []);
+
+
+                if ($scope.canGroup) {
+
+                    $scope.management.groupItems = layout.groupItems;
+                    $scope.management.instance.state(layout.state);
                 }
 
-            }, []);
+
+            });
 
 
-            if ($scope.canGroup) {
-
-                $scope.management.groupItems = layout.groupItems;
-                $scope.management.instance.state(layout.state);
-            }
-
-
-            $scope.management.instance.refresh();
-            $scope.management.instance.repaint();
+             $scope.isRestoreRunning = false;
+            // $scope.management.instance.refresh();
+            // $scope.management.instance.repaint();
 
         };
 
@@ -271,10 +282,22 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
 
             addEventHandler("onContentReady", function(e) {
 
+                if ($scope.isRestoreRunning) return;
+
                 //keep sync with internal dxDataGrid processes (column chooser, column position change...)
                 _.each($scope.management.columns, (column) => {
                     column.visible = e.component.columnOption(column.dataField, "visible");
                     column.visibleIndex = e.component.columnOption(column.dataField, "visibleIndex");
+
+                    if (column.isCustomColumn) {
+                        var customColumn = _.find($scope.management.customColumns, (custom) => {
+                            return custom.dataField == column.dataField;
+                        });
+
+                        customColumn.visible = column.visible;
+                        customColumn.visibleIndex = column.visibleIndex;
+                    }
+
                 });
 
 
