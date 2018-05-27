@@ -1,7 +1,7 @@
-dxGridExtension.factory('conditionalFormattingConfiguration', function($log) {
+dxGridExtension.factory('conditionalFormattingConfiguration', function($log, customColumnConfiguration) {
 
 
-    function applyConditionalFormattingExpressionOnCell(cell, rule, dataSource) {
+    function applyConditionalFormattingExpressionOnCell(cell, rule, dataSource, customColumns) {
 
         try {
             if (cell.rowType == 'data' &&
@@ -26,15 +26,53 @@ dxGridExtension.factory('conditionalFormattingConfiguration', function($log) {
                         dxGridExtensions.initFormulas(self);
 
                         var replacement = (typeof value) === "string" ? "'" + value + "'" : value;
+
+                        var sum = _.sumBy(dataSource, function(o) {
+                            return o[rule.target] != null && o[rule.target] > 0 ? o[rule.target] : 0;
+                        });
+
+                        var customColum = _.find(customColumns, (column) => {
+                            return column.dataField == key;
+                        });
+
+                        if (customColum) {
+
+                            replacement = customColumnConfiguration.computeCustomColumn(customColum.expression, row);
+
+                            sum = _.sumBy(dataSource, function(obj) {
+                                return customColumnConfiguration.computeCustomColumn(customColum.expression, obj);
+                            });
+
+                        }
+
                         processedExpression = processedExpression.split('[' + key + ']').join(" " + replacement + " ");
                     });
 
                     var result = eval(processedExpression);
 
-                    if (result) rule.formatting(cell, rule);
+                    if (result) rule.formatting(cell, cell.value, sum, rule);
 
                 } else {
-                    rule.formatting(cell, rule, dataSource);
+
+                    var value = cell.value;
+
+                    var sum = _.sumBy(dataSource, function(o) {
+                        return o[rule.target] != null && o[rule.target] > 0 ? o[rule.target] : 0;
+                    });
+
+                    var customColum = _.find(customColumns, (column) => {
+                        return column.dataField == cell.column.dataField;
+                    });
+
+                    if (customColum) {
+                        value = customColumnConfiguration.computeCustomColumn(customColum.expression, cell.row.data);
+
+                        sum = _.sumBy(dataSource, function(obj) {
+                            return customColumnConfiguration.computeCustomColumn(customColum.expression, obj);
+                        });
+                    }
+
+                    rule.formatting(cell, value, sum, rule);
                 }
 
             };
@@ -50,17 +88,13 @@ dxGridExtension.factory('conditionalFormattingConfiguration', function($log) {
         "items": [{
             text: "Proportional Bars",
             isExpressionBased: false,
-            formatting: function(options, rule, dataSource) {
+            formatting: function(options, value, sum, rule) {
 
                 if (options.column.dataType != 'number') return;
 
-                if (options.value < 0) return;
+                if (value < 0) return;
 
-                var total = _.sumBy(dataSource, function(o) {
-                    return o[rule.target] != null && o[rule.target] > 0 ? o[rule.target] : 0;
-                });
-
-                var fieldHtml = "<div><div class='formatting bar superpose' style='background:" + rule.color + ";width:" + (options.value / total) * 100 + "%;''></div> <div class='formatting superpose'  style='z-index: 10;margin-top:-16px;'>" +
+                var fieldHtml = "<div><div class='formatting bar superpose' style='background:" + rule.color + ";width:" + (value / sum) * 100 + "%;''></div> <div class='formatting superpose'  style='z-index: 10;margin-top:-16px;'>" +
                     options.text +
                     "  </div></div>";
 
@@ -70,11 +104,11 @@ dxGridExtension.factory('conditionalFormattingConfiguration', function($log) {
         }, {
             text: "Up/Down colors",
             isExpressionBased: false,
-            formatting: function(options, rule) {
+            formatting: function(options, value, sum, rule) {
 
                 if (options.column.dataType != 'number') return;
 
-                if (options.value > 0) {
+                if (value > 0) {
                     options.cellElement.css("color", "green");
                 } else {
 
@@ -85,11 +119,11 @@ dxGridExtension.factory('conditionalFormattingConfiguration', function($log) {
         }, {
             text: "Up/Down icon",
             isExpressionBased: false,
-            formatting: function(options, rule) {
+            formatting: function(options, value, sum, rule) {
 
                 if (options.column.dataType != 'number') return;
 
-                if (options.value > 0) {
+                if (value > 0) {
                     options.cellElement.append('<span class="cb cb-chevron-up" style="color:green;"></span>');
                 } else {
 
@@ -103,19 +137,19 @@ dxGridExtension.factory('conditionalFormattingConfiguration', function($log) {
         "items": [{
             text: "Text color",
             isExpressionBased: true,
-            formatting: function(options, rule) {
+            formatting: function(options, value, sum, rule) {
                 $(options.cellElement[0]).css("color", rule.color);
             }
         }, {
             text: "Background Color",
             isExpressionBased: true,
-            formatting: function(options, rule) {
+            formatting: function(options, value, sum, rule) {
                 $(options.cellElement[0]).css("background-color", rule.color);
             }
         }, {
             text: "Icon",
             isExpressionBased: true,
-            formatting: function(options, rule) {
+            formatting: function(options, value, sum, rule) {
                 options.cellElement.append('<span class="' + rule.icon + '" style="color: ' + rule.color + ';"></span>');
             }
         }]
