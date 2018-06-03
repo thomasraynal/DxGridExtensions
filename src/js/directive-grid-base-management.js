@@ -22,8 +22,8 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
 
         if (!$scope.canGroup) return;
 
-        var columns = getConfig('columns');
-        var groupItems = getConfig('groupItems');
+        var columns = $scope.management.columns;
+        var groupItems = $scope.management.groupItems;
 
 
         var groups = _.transform(columns, function(aggregate, item) {
@@ -44,7 +44,7 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
             }
         }, []);
 
-        setConfig('groupItems', groups);
+        $scope.management.groupItems = groups;
     });
 
     $scope.$watch($scope.management.options.bindingOptions.dataSource, function() {
@@ -67,7 +67,7 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
                 format: { type: '', precision: 0 }
             };
 
-            var existingColumn = _.find(getConfig('columns'), function(c) {
+            var existingColumn = _.find($scope.management.columns, function(c) {
                 return c.dataField == field
             });
 
@@ -114,9 +114,9 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
             }
         }, []);
 
-        _.each(getConfig('customColumns'), function(customColumn) {
+        _.each($scope.management.customColumns, function(customColumn) {
 
-            var column = _.find(getConfig('columns'), function(c) {
+            var column = _.find($scope.management.columns, function(c) {
                 return c.dataField == customColumn.name
             });
 
@@ -130,16 +130,9 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
 
         });
 
-        setConfig('columns', columns);
+        $scope.management.columns = column;
+
     });
-
-    function setConfig(key, value) {
-        $scope.management[key] = value;
-    };
-
-    function getConfig(index) {
-        return $scope.management[index];
-    };
 
     function addEventHandler(ev, handler) {
 
@@ -187,12 +180,12 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
         if ($scope.canGroup) $scope.management.options.bindingOptions['summary.groupItems'] = 'management.groupItems';
 
 
-        var columns = dxGridExtensions.isUndefinedOrNull(getConfig('columns')) ? null : getConfig('columns');
-        setConfig('columns', columns);
+        var columns = dxGridExtensions.isUndefinedOrNull($scope.management.columns) ? null : $scope.management.columns;
+        $scope.management.columns = columns;
 
         if ($scope.canGroup) {
-            var groupItems = dxGridExtensions.isUndefinedOrNull(getConfig('groupItems')) ? null : getConfig('groupItems');
-            if (!$scope.canGroup) setConfig('groupItems', groupItems);
+            var groupItems = dxGridExtensions.isUndefinedOrNull($scope.management.groupItems) ? null : $scope.management.groupItems;
+            if (!$scope.canGroup) $scope.management.groupItems = groupItems;
         }
 
         $scope.management.save = () => {
@@ -258,7 +251,7 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
             });
 
 
-             $scope.isRestoreRunning = false;
+            $scope.isRestoreRunning = false;
             // $scope.management.instance.refresh();
             // $scope.management.instance.repaint();
 
@@ -270,7 +263,7 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
 
             if (dxGridExtensions.isUndefinedOrNull(grid.option("onCellPrepared"))) {
                 addEventHandler("onCellPrepared", function(options) {
-                    _.each(getConfig('conditionalFormattingRules'), function(rule) {
+                    _.each($scope.management.conditionalFormattingRules, function(rule) {
                         conditionalFormattingConfiguration.applyConditionalFormattingExpressionOnCell(
                             options,
                             rule,
@@ -379,7 +372,7 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
 
                     if (null == $scope.management.currentColumn || $scope.management.currentColumn.dataType == "string") return;
 
-                    var groupItems = getConfig('groupItems');
+                    var groupItems = $scope.management.groupItems;
 
                     if (dxGridExtensions.isUndefinedOrNull(groupItems)) return;
 

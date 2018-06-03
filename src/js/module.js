@@ -59,4 +59,4 @@
 })();
 
 angular.module('dxGridExtensionTemplates', []);
-var dxGridExtension = angular.module('dxGridExtension', ['dx', 'ngRoute', 'dxGridExtensionTemplates']);
+var dxGridExtension = angular.module('dxGridExtension', ['dx', 'dxGridExtensionTemplates']);
