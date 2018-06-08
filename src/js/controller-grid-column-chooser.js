@@ -81,48 +81,46 @@ dxGridExtension.controller('columnChooser', function columnChooserCrtl($scope, $
             e.rowElement.data('keyValue', e.key);
         },
         editing: {
-            mode: "popup",
-            allowUpdating: true,
-            popup: {
-                showTitle: false,
-                width: 700,
-                height: 345,
-                position: {
-                    my: "middle",
-                    at: "middle",
-                    of: window
-                }
-            }
+            mode: "cell",
+            allowUpdating: true
+        },
+        columnChooser: {
+            enabled: true
         },
         columns: [{
-            dataField: 'caption',
-            caption: "Caption"
-        }, {
-            dataField: "hasAggregation",
-            caption: "Aggregation",
-            dataType: "boolean",
-            allowFiltering: false
-        }, {
-            dataField: "visible",
-            caption: "Visible",
-            dataType: "boolean",
-            allowFiltering: true
-        }, {
-            dataField: "format",
-            caption: "Format",
-            lookup: {
-                allowClearing: false,
-                dataSource: customColumnConfiguration.customColumnFormats,
-                displayExpr: "text",
-                valueExpr: "text"
-            },
-            allowFiltering: false
-        }, {
-            dataField: 'position',
-            caption: "Position",
-            visible: false,
-            allowFiltering: false
-        }]
+                dataField: 'caption',
+                caption: "Caption"
+            }, {
+                dataField: "hasAggregation",
+                caption: "Aggregation",
+                dataType: "boolean",
+                allowFiltering: true,
+                visible: false,
+            }, {
+                dataField: "visible",
+                caption: "Visible",
+                dataType: "boolean",
+                allowFiltering: true,
+                filterValue: true
+            }, {
+                dataField: "format",
+                caption: "Format",
+                lookup: {
+                    allowClearing: false,
+                    dataSource: customColumnConfiguration.customColumnFormats,
+                    displayExpr: "text",
+                    valueExpr: "text"
+                },
+                allowFiltering: false,
+                visible: false,
+            }, {
+                dataField: 'position',
+                caption: "Position",
+                visible: false,
+                allowFiltering: false
+            }
+
+        ]
     };
 
     $scope.columnChooserValidateButtonOptions = {
@@ -205,25 +203,20 @@ dxGridExtension.controller('columnChooser', function columnChooserCrtl($scope, $
             axis: "y",
             drag: function(event, ui) {
 
-                $timeout(() => {
+                var scrollDownOffset = $scope.columnChooserGrid.height() + $scope.columnChooserGrid.offset().top - 100;
+                var scrollUpOffset = $scope.columnChooserGrid.offset().top + 100;
 
-                    var scrollDownOffset = $scope.columnChooserGrid.height() + $scope.columnChooserGrid.offset().top - 50;
-                    var scrollUpOffset = $scope.columnChooserGrid.offset().top + 50;
+                if (ui.offset.top < scrollUpOffset) {
+                    var scrollable = $scope.columnChooserGrid.dxDataGrid("instance").getScrollable();
+                    var offset = scrollable.scrollOffset().top - 30 < 0 ? 0 : scrollable.scrollOffset().top - 30;
+                    scrollable.scrollTo(offset)
+                }
 
-                    if (ui.offset.top < scrollUpOffset) {
-                        var scrollable = $scope.columnChooserGrid.dxDataGrid("instance").getScrollable();
-                        var offset = scrollable.scrollOffset().top - 10 < 0 ? 0 : scrollable.scrollOffset().top - 10;
-                        scrollable.scrollTo(offset)
-                    }
-
-                    if (ui.offset.top > scrollDownOffset) {
-                        var scrollable = $scope.columnChooserGrid.dxDataGrid("instance").getScrollable();
-                        var offset = scrollable.scrollOffset().top + 10;
-                        scrollable.scrollTo(offset)
-                    };
-
-                });
-
+                if (ui.offset.top > scrollDownOffset) {
+                    var scrollable = $scope.columnChooserGrid.dxDataGrid("instance").getScrollable();
+                    var offset = scrollable.scrollOffset().top + 30;
+                    scrollable.scrollTo(offset)
+                };
             },
             start: function(event, ui) {
 
