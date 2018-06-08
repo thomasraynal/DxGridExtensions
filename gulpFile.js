@@ -41,6 +41,21 @@ gulp.task('js', function() {
         .pipe(gulp.dest('demo/js'));
 });
 
+gulp.task('vendorjs', function() {
+    return gulp.src([
+            './node_modules/jquery/dist/jquery.min.js',
+            './node_modules/jquery-ui-dist/jquery-ui.min.js',
+            './node_modules/jstat/dist/jstat.min.js',
+            './node_modules/formulajs/dist/formula.min.js',
+            './node_modules/angular/angular.min.js',
+            './node_modules/lodash/lodash.min.js',
+            './node_modules/jquery-ui-dist/jquery-ui.min.css',
+            './vendor/dx.all.js'
+        ])
+        .pipe(gulp.dest(targetDir + '/vendor'))
+        .pipe(gulp.dest('demo/vendor'));
+});
+
 
 gulp.task('test', function(done) {
     new Karma({
@@ -63,4 +78,4 @@ gulp.task('watch', function() {
     gulp.watch(['./src/css/*.css'], ['css']);
 });
 
-gulp.task('default', ['css', 'templates', 'js', 'watch',  'connect']);
+gulp.task('default', ['css', 'templates', 'js', 'vendorjs', 'watch', 'connect']);

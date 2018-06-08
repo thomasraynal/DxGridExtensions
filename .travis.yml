@@ -12,8 +12,8 @@ before_install:
 
 sudo: false
 
-addons:
-  chrome: stable
+# addons:
+#   chrome: stable
 
 # before_script:
 #   - npm install -g gulp-cli

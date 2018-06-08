@@ -130,7 +130,7 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
 
         });
 
-        $scope.management.columns = column;
+        $scope.management.columns = columns;
 
     });
 

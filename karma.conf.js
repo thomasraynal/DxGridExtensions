@@ -16,16 +16,14 @@ module.exports = function(config) {
 
         // list of files / patterns to load in the browser
         files: [
-            './tests/demo/data.js',
-            './dependencies/jquery-3.1.1.min.js',
-            './dependencies/jquery-ui.min.js',
-            './dependencies/jquery.event.drag-2.3.0.js',
-            './dependencies/angular.min.js',
-            './dependencies/angular-route.min.js',
-            './dependencies/dx.all.js',
-            './dependencies/jstat.min.js',
-            './dependencies/formula.js',
-            './dependencies/lodash.min.js',
+            './demo/js/data.js',
+            './node_modules/jquery/dist/jquery.min.js',
+            './node_modules/jquery-ui-dist/jquery-ui.min.js',
+            './node_modules/angular/angular.min.js',
+            './vendor/dx.all.js',
+            './node_modules/jstat/dist/jstat.min.js',
+            './node_modules/formulajs/dist/formula.min.js',
+            './node_modules/lodash/lodash.min.js',
             './dist/dx-grid-extensions.min.js',
             './node_modules/angular-mocks/angular-mocks.js',
             './tests/tests.js'
@@ -37,13 +35,34 @@ module.exports = function(config) {
 
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-        preprocessors: {},
+        preprocessors: {
+            'dist/dx-grid-extensions.min.js': ['coverage'],
+            'tests/tests.js': ['babel']
+        },
+        babelPreprocessor: {
+            options: {
+                presets: ['es2015'],
+                sourceMap: 'inline',
+            },
+            filename: function(file) {
+                return file.originalPath.replace(/\.js$/, '.es5.js');
+            },
+            sourceFileName: function(file) {
+                return file.originalPath;
+            }
+        },
 
+        plugins: [
+            'karma-jasmine',
+            'karma-phantomjs-launcher',
+            'karma-coverage',
+            'karma-babel-preprocessor'
+        ],
 
         // test results reporter to use
         // possible values: 'dots', 'progress'
         // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-        reporters: ['progress'],
+        reporters: ['progress', 'coverage'],
 
 
         // web server port
@@ -56,7 +75,7 @@ module.exports = function(config) {
 
         // level of logging
         // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-        logLevel: config.LOG_INFO,
+        logLevel: config.LOG_DEBUG,
 
 
         // enable / disable watching file and executing tests whenever any file changes
@@ -65,14 +84,8 @@ module.exports = function(config) {
 
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        browsers: ['ChromeHeadlessNoSandbox'],
+        browsers: ['PhantomJS'],
 
-        customLaunchers: {
-            ChromeHeadlessNoSandbox: {
-                base: 'ChromeHeadless',
-                flags: ['--no-sandbox']
-            }
-        },
 
         // Continuous Integration mode
         // if true, Karma captures browsers, runs the tests and exits
@@ -80,6 +93,17 @@ module.exports = function(config) {
 
         // Concurrency level
         // how many browser should be started simultaneous
-        concurrency: Infinity
+        concurrency: Infinity,
+
+        coverageReporter: {
+            includeAllSources: false,
+            dir: 'coverage/',
+            reporters: [
+                { type: "html", subdir: "html" },
+                { type: 'text-summary' },
+                { type: 'lcovonly', subdir: '.' },
+
+            ]
+        }
     })
 }
