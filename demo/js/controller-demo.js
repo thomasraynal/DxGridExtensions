@@ -1,5 +1,5 @@
 dxGridExtensionDemo
-    .controller('demo', function demoCrtl($scope, $timeout, $interval) {
+    .controller('demo', function demoCrtl($scope, $timeout, $interval, $http) {
 
         $timeout(() => {
 
@@ -10,6 +10,7 @@ dxGridExtensionDemo
             $scope.selectedTreeGridLayout = $scope.savedTreeGridLayouts[0];
 
         }, 1000);
+
 
         $scope.demoFlatData = window.dxGridExtensionsDemo.stockData;
         $scope.demoTreeData = window.dxGridExtensionsDemo.cashData;
@@ -91,7 +92,6 @@ dxGridExtensionDemo
                 value: "selectedFlatGridLayout"
             },
             displayExpr: "name",
-
             onItemClick: function(e) {
                 $scope.selectedFlatGridLayout = e.itemData;
             }
@@ -103,11 +103,17 @@ dxGridExtensionDemo
                 value: "selectedTreeGridLayout"
             },
             displayExpr: "name",
-
             onItemClick: function(e) {
                 $scope.selectedTreeGridLayout = e.itemData;
             }
         };
+
+        $scope.menuExtensions = [{
+            text: 'This is an menu extension!',
+            onItemClick: function() {
+                DevExpress.ui.dialog.alert('This is a menu extension!', 'Menu Extension');
+            }
+        }];
 
         $scope.demoFlatGridOptions = {
             height: height,

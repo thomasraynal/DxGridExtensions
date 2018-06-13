@@ -1,57 +1,33 @@
-dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl(
-    $scope,
-    attributes,
-    element,
-    parent,
-    customColumnConfiguration,
-    conditionalFormattingConfiguration,
-    $controller,
-    $timeout) {
+dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl($scope, attributes, element, parent, customColumnConfiguration, conditionalFormattingConfiguration, $controller, $timeout) {
 
     initialize();
 
-    $scope.isRestoreRunning = false;
+    $scope.isRestore = false;
 
-    $scope.safeUpdate = (action) => {
+    $scope.safeUpdate = function(action) {
         $scope.management.instance.beginUpdate();
         action();
         $scope.management.instance.endUpdate();
     };
 
-    $scope.$watch($scope.management.options.bindingOptions.columns, function() {
+    $scope.$watch(function() {
+        return $scope.self[attributes.datasource];
+    }, function() {
 
-        if (!$scope.canGroup) return;
+        $scope.management.datasource = $scope.self[attributes.datasource];
 
-        var columns = $scope.management.columns;
-        var groupItems = $scope.management.groupItems;
+        if ($scope.isRestore) return;
 
+        if (dxGridExtensions.isUndefinedOrNull($scope.self[attributes.datasource]) || $scope.self[attributes.datasource].length == 0) return;
 
-        var groups = _.transform(columns, function(aggregate, item) {
+        setUpColumnsFromDataSource();
 
-            if (item.dataType === "number") {
+        setUpCustomColumns();
 
-                var existingGroup = _.find(groupItems, function(group) {
-                    return item.column == item.dataField;
-                });
-
-                if (!dxGridExtensions.isUndefinedOrNull(existingGroup)) {
-                    aggregate.push(groupItem);
-                } else {
-
-                    var groupItem = createDefaultNumberGroupItem(item.dataField);
-                    aggregate.push(groupItem);
-                }
-            }
-        }, []);
-
-        $scope.management.groupItems = groups;
+        createDataGroups();
     });
 
-    $scope.$watch($scope.management.options.bindingOptions.dataSource, function() {
-
-
-        if (dxGridExtensions.isUndefinedOrNull($scope.management.datasource) || $scope.management.datasource.length == 0) return;
-
+    function setUpColumnsFromDataSource() {
 
         var template = $scope.management.datasource[0];
 
@@ -64,32 +40,31 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
                 caption: field,
                 dataType: "string",
                 visibleIndex: index++,
+                hasAggregation: false,
                 format: { type: '', precision: 0 }
             };
 
             var existingColumn = _.find($scope.management.columns, function(c) {
-                return c.dataField == field
+                return c.dataField == field;
             });
 
-            if (!dxGridExtensions.isUndefinedOrNull(existingColumn)) {
-
-                aggregate.push(existingColumn);
-
-            } else {
+            if (dxGridExtensions.isUndefinedOrNull(existingColumn)) {
 
                 for (var i = 0; i < $scope.management.datasource.length; i++) {
 
-
                     if (!dxGridExtensions.isUndefinedOrNull($scope.management.datasource[i][field])) {
 
-                        if (typeof($scope.management.datasource[i][field]) === "boolean") {
+                        if (typeof $scope.management.datasource[i][field] === "boolean") {
                             columnOption.dataType = "boolean";
+                            columnOption.hasAggregation = false;
                             break;
                         }
 
                         if (dxGridExtensions.isInt($scope.management.datasource[i][field])) {
                             columnOption.dataType = "number";
                             columnOption.format = { type: 'fixedpoint', precision: 0 };
+                            columnOption.hasAggregation = true;
+
                             break;
                         }
 
@@ -97,6 +72,7 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
                             columnOption.dataType = "number";
                             columnOption.summaryType = "sum";
                             columnOption.format = { type: 'fixedpoint', precision: 2 };
+                            columnOption.hasAggregation = true;
                             break;
                         }
 
@@ -110,36 +86,64 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
                 columnOption.isCustomColumn = false;
 
                 aggregate.push(columnOption);
-
             }
         }, []);
+
+        _.each(columns, function(column) {
+            $scope.management.columns.push(column);
+        });
+    };
+
+    function setUpCustomColumns() {
 
         _.each($scope.management.customColumns, function(customColumn) {
 
             var column = _.find($scope.management.columns, function(c) {
-                return c.dataField == customColumn.name
+                return c.dataField == customColumn.name;
             });
 
             column.isCustomColumn = true;
 
-            column.calculateCellValue = (data) => {
-                return customColumnConfiguration.computeCustomColumn(this.rule, data);
+            column.calculateCellValue = function(data) {
+                return customColumnConfiguration.computeCustomColumn(customColumn.expression, data);
             };
 
-            column.rule = customColumn.rule;
-
+            column.expression = customColumn.expression;
         });
+    };
 
-        $scope.management.columns = columns;
+    function createDataGroups() {
 
-    });
+        if (!$scope.canGroup) return;
+
+        var columns = $scope.management.columns;
+        var groupItems = $scope.management.groupItems;
+
+        var groups = _.transform(columns, function(aggregate, column) {
+
+            if (column.dataType === "number") {
+
+                var existingGroup = _.find(groupItems, function(group) {
+                    return column.dataField == group.column;
+                });
+
+                if (dxGridExtensions.isUndefinedOrNull(existingGroup) && column.hasAggregation) {
+                    var groupItem = createDefaultNumberGroupItem(column.dataField);
+                    aggregate.push(groupItem);
+                }
+            }
+        }, []);
+
+        _.each(groups, function(group) {
+            $scope.management.groupItems.push(group);
+        });
+    };
 
     function addEventHandler(ev, handler) {
 
-        var grid = getGridInstance();
-        var current = grid.option(ev);
+        var current = $scope.management.instance.option(ev);
 
-        grid.option(ev, function(options) {
+        $scope.management.instance.option(ev, function(options) {
             if (null != current) current(options);
             handler(options);
         });
@@ -147,12 +151,11 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
 
     function initialize() {
 
-        $scope.self = parent
+        $scope.self = parent;
 
         if (dxGridExtensions.isUndefinedOrNull($scope.self.gridManagement)) {
             $scope.self.gridManagement = {};
         }
-
 
         $scope.management = $scope.self.gridManagement[attributes.instance] = {};
 
@@ -162,6 +165,7 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
         $scope.management.conditionalFormattingRules = [];
 
         $scope.management.instance = $scope.self[attributes.instance];
+        $scope.management.menu = $scope.self[attributes.menu];
 
         $scope.management.name = attributes.instance;
         $scope.management.options = $scope.self[attributes.options];
@@ -179,7 +183,6 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
 
         if ($scope.canGroup) $scope.management.options.bindingOptions['summary.groupItems'] = 'management.groupItems';
 
-
         var columns = dxGridExtensions.isUndefinedOrNull($scope.management.columns) ? null : $scope.management.columns;
         $scope.management.columns = columns;
 
@@ -188,111 +191,120 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
             if (!$scope.canGroup) $scope.management.groupItems = groupItems;
         }
 
-        $scope.management.save = () => {
+        $scope.management.export = function() {
+
+            var source = $scope.self[attributes.datasource];
+
+            var gridData = new DevExpress.data.DataSource({
+                store: source,
+                paginate: false
+            });
+
+            gridData.filter($scope.management.instance.getCombinedFilter());
+
+            return gridData.load().then(function(data) {
+
+                var result = _.cloneDeep(data);
+
+                var columns = _.transform($scope.management.instance.getVisibleColumns(), function(aggregate, column) {
+                    aggregate.push(column.dataField);
+                }, []);
+
+                for (var i = 0; i < result.length; i++) {
+
+                    for (var property in result[i]) {
+                        if (result[i].hasOwnProperty(property)) {
+                            if (!_.some(columns, function(column) {
+                                    return property === column;
+                                })) {
+                                delete result[i][property];
+                            }
+                        }
+                    }
+                }
+
+                _.each(result, function(row) {
+                    _.each($scope.management.customColumns, function(customColumn) {
+                        row[customColumn.name] = customColumnConfiguration.computeCustomColumn(customColumn.expression, row);
+                    });
+                });
+
+                return result;
+            });
+        };
+
+        $scope.management.save = function() {
+
+            var state = $scope.canGroup ? $scope.management.instance.state() : null;
+
             return {
                 columns: $scope.management.columns,
                 conditionalFormattingRules: $scope.management.conditionalFormattingRules,
                 customColumns: $scope.management.customColumns,
                 groupItems: $scope.management.groupItems,
                 name: $scope.management.name,
-                state: ($scope.canGroup) ? $scope.management.instance.state() : null
+                state: state
             };
         };
 
-        $scope.management.restore = (layout) => {
+        $scope.management.restore = function(layout) {
 
-            $scope.isRestoreRunning = true;
+            $scope.isRestore = true;
 
-            $scope.safeUpdate(() => {
+            $timeout(function() {
 
-                $scope.management.conditionalFormattingRules = _.transform(layout.conditionalFormattingRules, (aggregate, rule) => {
 
-                    aggregate.push(conditionalFormattingConfiguration.createRule(
-                        rule.text,
-                        rule.target,
-                        rule.expression,
-                        rule.color,
-                        rule.icon
-                    ));
+                $scope.management.columns = [];
+                $scope.management.groupItems = [];
 
+                $scope.management.conditionalFormattingRules = _.transform(layout.conditionalFormattingRules, function(aggregate, rule) {
+
+                    aggregate.push(conditionalFormattingConfiguration.createRule(rule.text, rule.target, rule.expression, rule.color, rule.icon));
                 }, []);
 
+                $scope.management.customColumns = _.transform(layout.customColumns, function(aggregate, column) {
 
-                $scope.management.customColumns = _.transform(layout.customColumns, (aggregate, column) => {
-
-                    aggregate.push(customColumnConfiguration.createCustomColumn(
-                        column.name,
-                        column.expression,
-                        column.formatting,
-                        column.visibleIndex
-                    ));
-
+                    aggregate.push(customColumnConfiguration.createCustomColumn(column.name, column.expression, column.formatting, column.visibleIndex));
                 }, []);
 
-                $scope.management.columns = _.transform(layout.columns, (aggregate, column) => {
-
-                    if (column.isCustomColumn) {
-                        var customColumn = _.find($scope.management.customColumns, (custom) => custom.dataField == column.dataField);
-                        aggregate.push(customColumn);
-                    } else {
-                        aggregate.push(column);
-                    }
-
-                }, []);
-
+                _.each(layout.columns, function(column) {
+                    $scope.management.columns.push(column);
+                });
 
                 if ($scope.canGroup) {
 
-                    $scope.management.groupItems = layout.groupItems;
-                    $scope.management.instance.state(layout.state);
+                    _.each(layout.groupItems, function(group) {
+                        $scope.management.groupItems.push(group);
+                    });
                 }
 
+                setUpCustomColumns();
+
+                //important
+                if ($scope.canGroup) $scope.management.instance.state(layout.state);
+
+                $scope.isRestore = false;
 
             });
-
-
-            $scope.isRestoreRunning = false;
-            // $scope.management.instance.refresh();
-            // $scope.management.instance.repaint();
-
         };
 
-        $timeout(() => {
+        $timeout(function() {
 
             var grid = getGridInstance();
 
             if (dxGridExtensions.isUndefinedOrNull(grid.option("onCellPrepared"))) {
                 addEventHandler("onCellPrepared", function(options) {
                     _.each($scope.management.conditionalFormattingRules, function(rule) {
-                        conditionalFormattingConfiguration.applyConditionalFormattingExpressionOnCell(
-                            options,
-                            rule,
-                            $scope.management.datasource,
-                            $scope.management.customColumns);
+                        conditionalFormattingConfiguration.applyConditionalFormattingExpressionOnCell(options, rule, $scope.management.datasource, $scope.management.customColumns);
                     });
                 });
             }
 
             addEventHandler("onContentReady", function(e) {
 
-                if ($scope.isRestoreRunning) return;
+                if ($scope.isRestore) return;
 
-                //keep sync with internal dxDataGrid processes (column chooser, column position change...)
-                _.each($scope.management.columns, (column) => {
-                    column.visible = e.component.columnOption(column.dataField, "visible");
-                    column.visibleIndex = e.component.columnOption(column.dataField, "visibleIndex");
-
-                    if (column.isCustomColumn) {
-                        var customColumn = _.find($scope.management.customColumns, (custom) => {
-                            return custom.dataField == column.dataField;
-                        });
-
-                        customColumn.visible = column.visible;
-                        customColumn.visibleIndex = column.visibleIndex;
-                    }
-
-                });
-
+                syncColumns(e);
 
             });
 
@@ -307,6 +319,52 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
                     column.groupCellTemplate = window.dxGridExtensions.groupCellTemplate;
                 });
             });
+        });
+    };
+
+    //refacto - we should use grid layout columns and drop the bindings, i.e management.columns
+    function syncColumns(e) {
+
+        var trackedProperties = ["visible", "visibleIndex", "fixed", "fixedPosition", "groupIndex", "sortOrder", "sortIndex"];
+
+        function clean(obj) {
+            for (var property in obj) {
+                if (dxGridExtensions.isUndefinedOrNull(obj[property])) {
+                    delete obj[property];
+                }
+            }
+        }
+
+        _.each($scope.management.columns, function(column) {
+
+            column.visible = e.component.columnOption(column.dataField, "visible");
+            column.visibleIndex = e.component.columnOption(column.dataField, "visibleIndex");
+            column.fixed = e.component.columnOption(column.dataField, "fixed");
+            column.fixedPosition = e.component.columnOption(column.dataField, "fixedPosition");
+            column.groupIndex = e.component.columnOption(column.dataField, "groupIndex");
+            column.sortOrder = e.component.columnOption(column.dataField, "sortOrder");
+            column.sortIndex = e.component.columnOption(column.dataField, "sortIndex");
+            column.hasAggregation = _.some($scope.management.groupItems, function(group) {
+                return group.column == column.dataField;
+            });
+
+            if (column.isCustomColumn) {
+
+                var customColumn = _.find($scope.management.customColumns, function(custom) {
+                    return custom.dataField == column.dataField;
+                });
+
+                customColumn.visible = column.visible;
+                customColumn.visibleIndex = column.visibleIndex;
+                customColumn.fixed = column.fixed;
+                customColumn.fixedPosition = column.fixedPosition;
+                customColumn.groupIndex = column.groupIndex;
+                customColumn.hasAggregation = column.hasAggregation;
+
+                clean(customColumn);
+            }
+
+            clean(column);
 
         });
     };
@@ -315,13 +373,14 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
         if (dxGridExtensions.isUndefinedOrNull($scope.$control)) return null;
         try {
             //if the grid has been rendered
-            var grid = ($scope.self[$scope.management.name].NAME) ? $scope.self[$scope.management.name] : $scope.getDevExpressControl();
+            var grid = $scope.self[$scope.management.name].NAME ? $scope.self[$scope.management.name] : $scope.getDevExpressControl();
             if ($scope.management.instance !== grid) {
                 $scope.management.instance = $scope.self[$scope.management.name] = grid;
-                $timeout(() => $scope.management.instance.repaint());
+                $timeout(function() {
+                    return $scope.management.instance.repaint();
+                });
             }
             return grid;
-
         } catch (ex) {
             return null;
         }
@@ -334,32 +393,31 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
 
         var menu = [{
             text: 'Management - Columns',
-            onItemClick: function() {
+            onItemClick: function onItemClick() {
                 $scope.management.showColumnChooserConsole = true;
             }
         }, {
             text: 'Management - Conditional Formatting',
-            onItemClick: function() {
+            onItemClick: function onItemClick() {
                 $scope.management.showConditionalFormattingConsole = true;
             }
         }, {
             text: 'Management - Custom Columns',
-            onItemClick: function() {
+            onItemClick: function onItemClick() {
                 $scope.management.showCustomColumnConsole = true;
             }
         }, {
             text: 'Current Column - Modify',
-            onItemClick: function() {
+            onItemClick: function onItemClick() {
                 $scope.management.showColumnManagementConsole = true;
             }
         }];
-
 
         if ($scope.canGroup) {
 
             menu.push({
                 text: 'Current Column - Remove Aggregation',
-                onItemClick: function() {
+                onItemClick: function onItemClick() {
                     _.remove($scope.management.groupItems, function(item) {
                         return item.column === $scope.management.currentColumn.dataField;
                     });
@@ -368,7 +426,7 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
 
             menu.push({
                 text: 'Current Column - Create Aggregation',
-                onItemClick: function() {
+                onItemClick: function onItemClick() {
 
                     if (null == $scope.management.currentColumn || $scope.management.currentColumn.dataType == "string") return;
 
@@ -388,8 +446,14 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
             });
         }
 
-        return menu;
+        if (!dxGridExtensions.isUndefinedOrNull($scope.management.menu)) {
 
+            _.each($scope.management.menu, function(ext) {
+                menu.push(ext);
+            });
+        }
+
+        return menu;
     };
 
     function createDefaultNumberGroupItem(name) {
@@ -403,9 +467,9 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
         };
     };
 
+    $controller('gridManagementExtensions', { $scope: $scope });
     $controller('columnManagement', { $scope: $scope });
     $controller('conditionalFormatting', { $scope: $scope });
-    $controller('columnChooser', { $scope: $scope })
-    $controller('customColumns', { $scope: $scope })
-
+    $controller('columnChooser', { $scope: $scope });
+    $controller('customColumns', { $scope: $scope });
 });

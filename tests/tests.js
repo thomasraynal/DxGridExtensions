@@ -120,6 +120,7 @@ describe('dxGridExtensionTests', function() {
 
     it('should test flat grid - column management', function() {
 
+
         var testScope = $rootScope.flatGridDirectiveScope;
 
         expect(testScope.management.datasource).toEqual($rootScope.demoFlatData);
@@ -314,7 +315,6 @@ describe('dxGridExtensionTests', function() {
         var finalizer = function() {
 
             // var html = window.btoa(testScope.management.instance._$element.html())
-
             // expect(html).toEqual(expectedHtml);
             done();
 

@@ -6,8 +6,9 @@ var gulp = require('gulp'),
     ngAnnotate = require('gulp-ng-annotate'),
     templateCache = require('gulp-angular-templatecache'),
     babel = require('gulp-babel'),
-    Karma = require('karma').Server;
-
+    Karma = require('karma').Server,
+    path = require('path'),
+    headerComment = require('gulp-header-comment');
 
 var targetDir = './dist';
 
@@ -21,6 +22,9 @@ gulp.task('css', function() {
     return gulp.src('./src/css/*.css')
         .pipe(concat('dx-grid-extensions.min.css'))
         .pipe(minifyCSS({ 'keepSpecialComments-*': 0 }))
+                .pipe(headerComment({
+            file: path.join(__dirname, 'version')
+        }))
         .pipe(gulp.dest(targetDir))
         .pipe(gulp.dest('demo/css'));
 
@@ -37,6 +41,9 @@ gulp.task('js', function() {
         .pipe(concat('dx-grid-extensions.min.js'))
         .pipe(ngAnnotate())
         .pipe(uglify())
+        .pipe(headerComment({
+            file: path.join(__dirname, 'version')
+        }))
         .pipe(gulp.dest(targetDir))
         .pipe(gulp.dest('demo/js'));
 });
@@ -53,7 +60,7 @@ gulp.task('vendorjs', function() {
             './vendor/dx.all.js'
         ])
         .pipe(gulp.dest(targetDir + '/vendor'))
-        .pipe(gulp.dest('demo/vendor'));
+        .pipe(gulp.dest('demo/js'));
 });
 
 

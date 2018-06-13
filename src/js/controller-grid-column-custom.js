@@ -28,9 +28,14 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
         dxGridExtensions.resetSelectBoxValue("#existingCustomColumns");
 
         //refacto handle use of customs column in expression
-        $scope.expressionCompliantColumns = _.filter($scope.management.columns, (column) => {
-            return !column.isCustomColumn;
-        });
+        $scope.expressionCompliantColumns = _($scope.management.columns)
+            .filter((column) => {
+                return !column.isCustomColumn;
+            })
+            .sortBy((column) => {
+                return column.dataField;
+            })
+            .value();
 
         $scope.selectedExistingCustomColumn = '';
         $scope.customColumnFormating = '';
@@ -206,7 +211,7 @@ dxGridExtension.controller('customColumns', function customColumnsCrtl($scope, $
     };
 
     function addColumn(column) {
-        
+
         $scope.management.customColumns.push(column);
         $scope.management.columns.push(column);
 

@@ -1,11 +1,6 @@
-/***********App***********/
-
 .dx-ext-field-container {
     width: 100%;
 }
-
-
-/*Conditional formatting**/
 
 .formatting.bar {
     display: inline-block;
@@ -15,9 +10,6 @@
 .formatting.superpose {
     display: block;
 }
-
-
-/*********Glypth**********/
 
 .cb {
     margin-left: 5px;
