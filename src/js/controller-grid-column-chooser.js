@@ -88,6 +88,10 @@ dxGridExtension.controller('columnChooser', function columnChooserCrtl($scope, $
             enabled: true
         },
         columns: [{
+                dataField: 'dataField',
+                caption: "Field",
+                allowEditing : false
+            }, {
                 dataField: 'caption',
                 caption: "Caption"
             }, {

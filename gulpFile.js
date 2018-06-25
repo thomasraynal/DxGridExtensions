@@ -22,7 +22,7 @@ gulp.task('css', function() {
     return gulp.src('./src/css/*.css')
         .pipe(concat('dx-grid-extensions.min.css'))
         .pipe(minifyCSS({ 'keepSpecialComments-*': 0 }))
-                .pipe(headerComment({
+        .pipe(headerComment({
             file: path.join(__dirname, 'version')
         }))
         .pipe(gulp.dest(targetDir))
