@@ -14,7 +14,7 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
         return $scope.self[attributes.datasource];
     }, function() {
 
-        $scope.management.datasource = $scope.self[attributes.datasource];
+        setDataSource();
 
         if ($scope.isRestore) return;
 
@@ -26,6 +26,27 @@ dxGridExtension.controller('baseGridManagement', function baseGridManagementCrtl
 
         createDataGroups();
     });
+
+    function setDataSource() {
+
+        var currentDatasource = $scope.self[attributes.datasource];
+
+        if (dxGridExtensions.isUndefinedOrNull(currentDatasource)) return;
+
+        //array datasource
+        if (Array.isArray(currentDatasource)) {
+            $scope.management.datasource = currentDatasource;
+            return;
+        }
+
+        //array store datasource
+        if (Array.isArray(currentDatasource._array)) {
+            $scope.management.datasource = currentDatasource._array;
+            return;
+        }
+
+        throw new Error("Unhandled datasource");
+    };
 
     function setUpColumnsFromDataSource() {
 

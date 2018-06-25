@@ -11,7 +11,6 @@ dxGridExtensionDemo
 
         }, 1000);
 
-
         $scope.demoFlatData = window.dxGridExtensionsDemo.stockData;
         $scope.demoTreeData = window.dxGridExtensionsDemo.cashData;
 
@@ -126,7 +125,9 @@ dxGridExtensionDemo
                 autoExpandAll: false,
             },
             columnChooser: {
-                enabled: true
+                enabled: true,
+                height: 500,
+                allowSearch: true
             },
             columnFixing: {
                 enabled: true
@@ -181,10 +182,8 @@ dxGridExtensionDemo
             },
             headerFilter: {
                 visible: false
-            },
-            columnChooser: {
-                enabled: true
             }
+        
         };
 
         function saveFlatGridLayout(name) {
